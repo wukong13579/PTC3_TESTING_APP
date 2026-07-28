@@ -187,7 +187,6 @@
                 </div>
             </div>
 
-            <!-- BỔ SUNG ĐẦY ĐỦ CHO CUỘN THỨ 1 -->
             <div class="form-group"><label>🔌 Cuộn Thứ 1:</label>
                 <div class="radio-tile-group">
                     <div class="radio-tile"><input type="radio" name="tu_un_thu1" id="t1_110_sqrt3" value="110_sqrt3" checked><label for="t1_110_sqrt3">110/√3</label></div>
@@ -197,7 +196,6 @@
                 </div>
             </div>
 
-            <!-- BỔ SUNG ĐẦY ĐỦ CHO CUỘN THỨ 2 -->
             <div class="form-group"><label>🔌 Cuộn Thứ 2:</label>
                 <div class="radio-tile-group">
                     <div class="radio-tile"><input type="radio" name="tu_un_thu2" id="t2_110_sqrt3" value="110_sqrt3" checked><label for="t2_110_sqrt3">110/√3</label></div>
@@ -208,7 +206,6 @@
                 </div>
             </div>
 
-            <!-- BỔ SUNG ĐẦY ĐỦ CHO CUỘN THỨ 3 -->
             <div class="form-group"><label>🔌 Cuộn Thứ 3:</label>
                 <div class="radio-tile-group">
                     <div class="radio-tile"><input type="radio" name="tu_un_thu3" id="t3_100_3" value="100_3" checked><label for="t3_100_3">100/3</label></div>
@@ -240,13 +237,14 @@
                 </div>
             </div>
             <hr>
+            <div style="font-size: 13px; font-weight: 800; color: #0a3b82; margin-bottom: 8px; text-align: center;">📊 NHẬP NHIỆT ĐỘ (°C) & ĐIỆN TRỞ R1C (mΩ):</div>
             <div class="pha-card"><div class="pha-title"><span>🟡 PHA A</span><span>🌡️ T (°C): <input type="number" id="tu_temp_a" value="30" style="width:55px;"></span></div><div class="grid-3col-input"><div class="coil-item"><label>Cuộn 1</label><input type="number" id="tu_ra_1" step="any"></div><div class="coil-item"><label>Cuộn 2</label><input type="number" id="tu_ra_2" step="any"></div><div class="coil-item"><label>Cuộn 3</label><input type="number" id="tu_ra_3" step="any"></div></div></div>
             <div class="pha-card"><div class="pha-title"><span>🟢 PHA B</span><span>🌡️ T (°C): <input type="number" id="tu_temp_b" value="30" style="width:55px;"></span></div><div class="grid-3col-input"><div class="coil-item"><label>Cuộn 1</label><input type="number" id="tu_rb_1" step="any"></div><div class="coil-item"><label>Cuộn 2</label><input type="number" id="tu_rb_2" step="any"></div><div class="coil-item"><label>Cuộn 3</label><input type="number" id="tu_rb_3" step="any"></div></div></div>
             <div class="pha-card"><div class="pha-title"><span>🔴 PHA C</span><span>🌡️ T (°C): <input type="number" id="tu_temp_c" value="30" style="width:55px;"></span></div><div class="grid-3col-input"><div class="coil-item"><label>Cuộn 1</label><input type="number" id="tu_rc_1" step="any"></div><div class="coil-item"><label>Cuộn 2</label><input type="number" id="tu_rc_2" step="any"></div><div class="coil-item"><label>Cuộn 3</label><input type="number" id="tu_rc_3" step="any"></div></div></div>
             <button class="btn-calc" onclick="tinhR1CTU()">QUY ĐỔI VỀ 75°C & KIỂM TRA ĐỘ LỆCH PHA TU</button>
             <div id="tu_result_r1c" class="result-box">
                 <div id="tu_alert_box_r1c" class="alert-banner"></div>
-                <table class="table-result"><thead><tr><th>Pha</th><th>Nhiệt độ (°C)</th><th>Hệ số k</th><th>R1 @ 75°C</th><th>R2 @ 75°C</th><th>R3 @ 75°C</th></tr></thead><tbody id="tu_result_r1c_table_body"></tbody></table>
+                <table class="table-result"><thead><tr><th>Pha</th><th>Nhiệt độ (°C)</th><th>Hệ số k</th><th>R1 @ 75°C (mΩ)</th><th>R2 @ 75°C (mΩ)</th><th>R3 @ 75°C (mΩ)</th></tr></thead><tbody id="tu_result_r1c_table_body"></tbody></table>
             </div>
         </div>
 
@@ -327,6 +325,7 @@ function luuVaoLocalStorage(type, record) {
     localStorage.setItem(key, JSON.stringify(history));
 }
 
+// 📌 HÀM ĐÁNH GIÁ CBM & CẢNH BÁO LỊCH SỬ / XUẤT XƯỞNG
 function checkHistoryDrift(type, currentTag, currentData, dataType) {
     var key = type === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
     var history = JSON.parse(localStorage.getItem(key) || '[]');
@@ -528,7 +527,7 @@ function tinhR1CTU() {
             var r3_75 = !isNaN(v3) ? v3 * k_pha : NaN; if(!isNaN(r3_75)) r_cuon3.push(r3_75);
 
             tbodyHtml += "<tr><td><b>" + p.name + "</b></td><td>" + t_pha + "</td><td>" + k_pha.toFixed(4) + "</td><td><b>" + (!isNaN(r1_75)?r1_75.toFixed(3):"-") + "</b></td><td><b>" + (!isNaN(r2_75)?r2_75.toFixed(3):"-") + "</b></td><td><b>" + (!isNaN(r3_75)?r3_75.toFixed(3):"-") + "</b></td></tr>";
-            detailLog += p.name + " (" + t_pha + "°C): R1=" + (!isNaN(r1_75)?r1_75.toFixed(3):"-") + " mΩ | R2=" + (!isNaN(r2_75)?r2_75.toFixed(3):"-") + " mΩ<br>";
+            detailLog += p.name + " (" + t_pha + "°C): R1=" + (!isNaN(r1_75)?r1_75.toFixed(3):"-") + " mΩ | R2=" + (!isNaN(r2_75)?r2_75.toFixed(3):"-") + " mΩ | R3=" + (!isNaN(r3_75)?r3_75.toFixed(3):"-") + " mΩ<br>";
         }
     }
     if (!hasData) { alert("Nhập R1C TU!"); return; }
