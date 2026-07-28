@@ -246,7 +246,8 @@
 </div>
 
 <script>
-const CLOUD_URL = "https://script.google.com/macros/s/AKfycby1XQKqvvHJCKwyuzsbCI3MxhUcjz4sbPraE9X2nJvOIJwyFWpN1ZAGz7fwOUaXYWNt/exec";
+// ĐÃ CẬP NHẬT LINK WEB APP MỚI NHẤT
+const CLOUD_URL = "https://script.google.com/macros/s/AKfycbxuAFppvtA-xNb1Sx1PkNNZMubN7as0LRtmvLfQVug6BmSYlVKiBYZzqVbUAbe1FmdI/exec";
 
 function switchMasterTab(type) {
     document.getElementById('btn-master-ti').classList.remove('active'); document.getElementById('btn-master-tu').classList.remove('active');
@@ -476,7 +477,7 @@ function hienThiNhatKy(type) {
     listDiv.innerHTML = html;
 }
 
-// 1. ĐỒNG BỘ LÊN CLOUD (Dùng POST action=upload)
+// 1. ĐỒNG BỘ LÊN CLOUD
 function dongBoCloudUp(typeStr) {
     if (!CLOUD_URL) { alert("Chưa cấu hình link Cloud!"); return; }
     var type = typeStr.toLowerCase();
@@ -507,7 +508,7 @@ function dongBoCloudUp(typeStr) {
     .finally(() => { btn.innerText = originalText; btn.disabled = false; });
 }
 
-// 2. TẢI DỮ LIỆU XUỐNG TỪ CLOUD (Dùng POST action=download giải quyết triệt để lỗi Redirect/GET)
+// 2. TẢI DỮ LIỆU XUỐNG TỪ CLOUD (POST action=download)
 function dongBoCloudDown(typeStr) {
     if (!CLOUD_URL) { alert("Chưa cấu hình link Cloud!"); return; }
     var payload = { action: "download" };
