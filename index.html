@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thí Nghiệm TU & TI - PTC3 EVNNPT (Cloud Sync)</title>
+    <title>Thí Nghiệm TU & TI - PTC3 EVNNPT (Cloud 2-Way Sync)</title>
     <!-- Tích hợp thư viện vẽ biểu đồ Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -85,7 +85,8 @@
         .btn-excel { flex: 1; min-width: 100%; background: #2f855a; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; text-align: center; box-shadow: 0 2px 6px rgba(47, 133, 90, 0.2); }
         .btn-backup { flex: 1; background: #4a5568; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; text-align: center; }
         .btn-import { flex: 1; background: #3182ce; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; text-align: center; }
-        .btn-cloud { flex: 1; min-width: 100%; background: linear-gradient(135deg, #0284c7 0%, #2b6cb0 100%); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; text-align: center; box-shadow: 0 4px 10px rgba(49, 130, 206, 0.3); text-transform: uppercase;}
+        .btn-cloud-up { flex: 1; min-width: 100%; background: linear-gradient(135deg, #0284c7 0%, #2b6cb0 100%); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; text-align: center; box-shadow: 0 4px 10px rgba(49, 130, 206, 0.3); text-transform: uppercase; margin-bottom: 8px;}
+        .btn-cloud-down { flex: 1; min-width: 100%; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; text-align: center; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); text-transform: uppercase;}
         .btn-danger { background: #e53e3e; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; width: 100%; margin-top: 15px; text-transform: uppercase; }
 
         /* Chart Modal Overlay */
@@ -102,7 +103,7 @@
 <div class="card">
     <div class="brand-header">
         <img src="image_da12fe.png" alt="EVNNPT PTC3 Logo" class="brand-logo" onerror="this.style.display='none'">
-        <div class="app-title">APP THÍ NGHIỆM ĐO LƯỜNG (CLOUD SYNC)</div>
+        <div class="app-title">THÍ NGHIỆM TU & TI - PTC3 (2-WAY CLOUD SYNC)</div>
     </div>
     
     <!-- MASTER TABS -->
@@ -115,7 +116,6 @@
     <!-- PHẦN 1: MÁY BIẾN DÒNG (TI)                 -->
     <!-- ========================================== -->
     <div id="master-ti" class="master-content active">
-        <!-- GLOBAL NAME TI & XU HƯỚNG -->
         <div class="form-group" style="background: #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #0a3b82;">
             <label style="font-size: 14px; margin-bottom: 8px;">🏷️ TÊN / VỊ TRÍ TRẠM (Dùng chung cho TSB & R1C):</label>
             <input type="text" id="ti_name_global" placeholder="VD: TI 431 - Trạm 220kV Bảo Lộc" style="font-weight: bold; font-size: 15px; color: #0a3b82; background: #fff;">
@@ -128,7 +128,7 @@
             <button type="button" class="tab-btn ti-tab-btn" onclick="switchSubTab('ti', 'ti_tab3')">3. Lịch Sử & Đồng Bộ</button>
         </div>
 
-        <!-- TI - TAB 1: TÍNH TỈ SỐ BIẾN -->
+        <!-- TI - TAB 1 -->
         <div id="ti_tab1" class="tab-content ti-tab-content active">
             <div style="background: #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
                 <div style="font-weight:bold; color:#0a3b82; margin-bottom:8px; font-size:13px;">⚙️ TỈ SỐ BIẾN ĐỊNH MỨC TỪNG CUỘN (A/A):</div>
@@ -193,7 +193,7 @@
             </div>
         </div>
 
-        <!-- TI - TAB 2: QUY ĐỔI ĐIỆN TRỞ 1 CHIỀU R1C -->
+        <!-- TI - TAB 2 -->
         <div id="ti_tab2" class="tab-content ti-tab-content">
             <div class="form-group" style="background: #e2e8f0; padding: 12px; border-radius: 8px;">
                 <label>📐 Vật liệu cuộn dây (Hằng số T):</label>
@@ -252,11 +252,12 @@
             </div>
         </div>
 
-        <!-- TI - TAB 3: NHẬT KÝ & XUẤT BÁO CÁO -->
+        <!-- TI - TAB 3: LỊCH SỬ & ĐỒNG BỘ 2 CHIỀU -->
         <div id="ti_tab3" class="tab-content ti-tab-content">
             <div style="font-weight: 800; color: #0a3b82; margin-bottom: 10px; font-size: 15px; text-transform: uppercase;">LỊCH SỬ THIẾT BỊ (TI)</div>
             
-            <button class="btn-cloud" onclick="dongBoCloud('TI')">☁️ ĐỒNG BỘ MỚI LÊN CLOUD (SHEETS)</button>
+            <button class="btn-cloud-up" onclick="dongBoCloudUp('TI')">☁️ ĐỒNG BỘ LÊN CLOUD (SHEETS)</button>
+            <button class="btn-cloud-down" onclick="dongBoCloudDown('TI')">📥 TẢI DỮ LIỆU XUỐNG TỪ CLOUD</button>
 
             <div class="btn-sync-group">
                 <button class="btn-excel" onclick="xuatExcelCSV('ti')">XUẤT BÁO CÁO EXCEL OFFLINE</button>
@@ -277,7 +278,6 @@
     <!-- PHẦN 2: MÁY BIẾN ÁP (TU)                   -->
     <!-- ========================================== -->
     <div id="master-tu" class="master-content">
-        <!-- GLOBAL NAME TU & XU HƯỚNG -->
         <div class="form-group" style="background: #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #0a3b82;">
             <label style="font-size: 14px; margin-bottom: 8px;">🏷️ TÊN / VỊ TRÍ TRẠM (Dùng chung cho TSB & R1C):</label>
             <input type="text" id="tu_name_global" placeholder="VD: TU 431 - Trạm 110kV Bảo Lộc" style="font-weight: bold; font-size: 15px; color: #0a3b82; background: #fff;">
@@ -290,7 +290,7 @@
             <button type="button" class="tab-btn tu-tab-btn" onclick="switchSubTab('tu', 'tu_tab3')">3. Lịch Sử & Đồng Bộ</button>
         </div>
 
-        <!-- TU - TAB 1: TÍNH TỈ SỐ BIẾN -->
+        <!-- TU - TAB 1 -->
         <div id="tu_tab1" class="tab-content tu-tab-content active">
             <div class="form-group">
                 <label>⚡ Sơ cấp định mức Un_sơ:</label>
@@ -390,7 +390,7 @@
             </div>
         </div>
 
-        <!-- TU - TAB 2: QUY ĐỔI ĐIỆN TRỞ 1 CHIỀU -->
+        <!-- TU - TAB 2 -->
         <div id="tu_tab2" class="tab-content tu-tab-content">
             <div class="form-group" style="background: #e2e8f0; padding: 12px; border-radius: 8px;">
                 <label>📐 Vật liệu cuộn dây (Hằng số T):</label>
@@ -408,7 +408,7 @@
             <div class="pha-card">
                 <div class="pha-title"><span>🟡 PHA A</span><span style="font-size:12px; font-weight:normal; color:#4a5568;">🌡️ T (°C): <input type="number" id="tu_temp_a" value="30" step="any" style="width:60px; padding:4px;"></span></div>
                 <div class="grid-3col-input">
-                    <div class="coil-item"><label>Cuộn 1</label><input type="number" id="tu_ra_1" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 1</label><input type="number" id="tu_rb_1" step="any"></div>
                     <div class="coil-item"><label>Cuộn 2</label><input type="number" id="tu_ra_2" step="any"></div>
                     <div class="coil-item"><label>Cuộn 3</label><input type="number" id="tu_ra_3" step="any"></div>
                 </div>
@@ -443,11 +443,12 @@
             </div>
         </div>
 
-        <!-- TU - TAB 3: NHẬT KÝ & XUẤT BÁO CÁO -->
+        <!-- TU - TAB 3: LỊCH SỬ & ĐỒNG BỘ 2 CHIỀU -->
         <div id="tu_tab3" class="tab-content tu-tab-content">
             <div style="font-weight: 800; color: #0a3b82; margin-bottom: 10px; font-size: 15px; text-transform: uppercase;">📋 LỊCH SỬ THIẾT BỊ (TU)</div>
             
-            <button class="btn-cloud" onclick="dongBoCloud('TU')">☁️ ĐỒNG BỘ MỚI LÊN CLOUD (SHEETS)</button>
+            <button class="btn-cloud-up" onclick="dongBoCloudUp('TU')">☁️ ĐỒNG BỘ LÊN CLOUD (SHEETS)</button>
+            <button class="btn-cloud-down" onclick="dongBoCloudDown('TU')">📥 TẢI DỮ LIỆU XUỐNG TỪ CLOUD</button>
 
             <div class="btn-sync-group">
                 <button class="btn-excel" onclick="xuatExcelCSV('tu')">XUẤT BÁO CÁO EXCEL OFFLINE</button>
@@ -466,7 +467,7 @@
 <!-- CỬA SỔ MODAL VẼ BIỂU ĐỒ (CHART.JS) -->
 <div id="chartModal">
     <div class="chart-container">
-        <span class="close-chart" onclick="document.getElementById('chartModal').style.display='none'">✖</span>
+        <span class="close-chart" onclick="document.getElementById('chartModal'].style.display='none'">✖</span>
         <h3 id="chartTitle" style="color:#0a3b82; text-align:center; margin-top:0;">ĐÁNH GIÁ XU HƯỚNG CBM</h3>
         <canvas id="trendChart" width="400" height="250"></canvas>
         <p id="chartNote" style="font-size: 11px; color: #718096; text-align: center; margin-top: 10px;">*Biểu đồ hiển thị sự thay đổi Lệch pha điện trở một chiều (R1C) qua các lần thí nghiệm.</p>
@@ -773,7 +774,7 @@ function showTrendChart(type) {
     });
 }
 
-// ---------- HIỂN THỊ LỊCH SỬ & ĐỒNG BỘ CLOUD ----------
+// ---------- HIỂN THỊ LỊCH SỬ & ĐỒNG BỘ 2 CHIỀU ----------
 function hienThiNhatKy(type) {
     var key = type === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
     var history = JSON.parse(localStorage.getItem(key) || '[]');
@@ -792,26 +793,23 @@ function hienThiNhatKy(type) {
     listDiv.innerHTML = html;
 }
 
-// HÀM ĐỒNG BỘ GOOGLE SHEETS
-function dongBoCloud(typeStr) {
+// 1. ĐỒNG BỘ LÊN CLOUD
+function dongBoCloudUp(typeStr) {
     if (!CLOUD_URL || CLOUD_URL === "DÁN_LINK_WEB_APP_CỦA_SẾP_VÀO_ĐÂY") {
-        alert("Sếp chưa dán link Web App (Google Sheets) vào file mã nguồn kìa!"); return;
+        alert("Sếp chưa cấu hình link Cloud!"); return;
     }
-
     var type = typeStr.toLowerCase();
     var key = type === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
     var history = JSON.parse(localStorage.getItem(key) || '[]');
-    
     var unsyncedRecords = history.filter(r => r.synced !== true);
     
     if (unsyncedRecords.length === 0) {
-        alert("Tất cả dữ liệu " + typeStr + " trên máy này đã được đồng bộ lên Cloud rồi sếp nhé!"); return;
+        alert("Tất cả dữ liệu " + typeStr + " đã đồng bộ lên Cloud rồi sếp!"); return;
     }
 
     var payload = { type: typeStr, records: unsyncedRecords };
-
     var btn = event.target; var originalText = btn.innerText;
-    btn.innerText = "⏳ ĐANG GỬI DỮ LIỆU LÊN CLOUD..."; btn.disabled = true;
+    btn.innerText = "⏳ ĐANG GỬI LÊN CLOUD..."; btn.disabled = true;
 
     fetch(CLOUD_URL, {
         method: "POST",
@@ -823,17 +821,73 @@ function dongBoCloud(typeStr) {
         if (data.status === "success") {
             history.forEach(r => { if(r.synced !== true) r.synced = true; });
             localStorage.setItem(key, JSON.stringify(history));
-            alert("Đã gửi thành công " + unsyncedRecords.length + " bản ghi lên Google Sheets!");
+            alert("Đã đẩy thành công " + unsyncedRecords.length + " bản ghi lên Google Sheets!");
             hienThiNhatKy(type); 
-        } else {
-            alert("Lỗi từ máy chủ: " + data.message);
-        }
+        } else { alert("Lỗi từ server: " + data.message); }
     })
-    .catch(error => { alert("Không thể kết nối đến Cloud. Vui lòng kiểm tra mạng 3G/4G/Wifi hoặc Link App Script ạ!\nLỗi: " + error); })
+    .catch(error => { alert("Lỗi kết nối mạng: " + error); })
     .finally(() => { btn.innerText = originalText; btn.disabled = false; });
 }
 
-// XUẤT EXCEL OFFLINE (Bao gồm bảng xu hướng)
+// 2. TẢI DỮ LIỆU XUỐNG TỪ CLOUD (SYNC DOWN)
+function dongBoCloudDown(typeStr) {
+    if (!CLOUD_URL) { alert("Chưa có link Cloud!"); return; }
+    var btn = event.target; var originalText = btn.innerText;
+    btn.innerText = "📥 ĐANG TẢI VỀ TỪ CLOUD..."; btn.disabled = true;
+
+    fetch(CLOUD_URL, { method: "GET" })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success") {
+            var cloudData = typeStr === 'TI' ? data.data.ti : data.data.tu;
+            if(!cloudData || cloudData.length === 0) { alert("Google Sheets chưa có dữ liệu " + typeStr + " nào!"); return; }
+
+            var key = typeStr.toLowerCase() === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
+            var localHistory = JSON.parse(localStorage.getItem(key) || '[]');
+            
+            // Xử lý chuyển đổi rows từ Sheets thành định dạng History của App
+            var newImportCount = 0;
+            cloudData.forEach(row => {
+                // Row cấu trúc: [Thời gian, Tên trạm, Hạng mục, Chi tiết TSB, Chi tiết R1C, Max TSB, Max R1C]
+                var timeVal = row[0]; var tagVal = row[1]; var typeVal = row[2];
+                var tsbD = row[3]; var r1cD = row[4]; var maxT = row[5]; var maxR = row[6];
+
+                // Kiểm tra xem trên local đã có bản ghi trùng thời gian và trạm này chưa
+                var exists = localHistory.some(h => h.time === timeVal && h.tag.toUpperCase() === tagVal.toUpperCase());
+                if (!exists) {
+                    localHistory.push({
+                        time: timeVal, tag: tagVal, type: typeVal, synced: true,
+                        tsbHtml: "", r1cHtml: "", tsbDetail: tsbD, r1cDetail: r1cD,
+                        rawTSB: maxT !== "" ? { maxError: parseFloat(maxT) } : null,
+                        rawR1C: maxR !== "" ? { maxLech: parseFloat(maxR) } : null
+                    });
+                    newImportCount++;
+                }
+            });
+
+            // Sắp xếp lại theo thời gian mới nhất lên đầu
+            localHistory.sort((a,b) => {
+                try {
+                    var d1 = a.time.split(" ")[0].split("/"), t1 = a.time.split(" ")[1].split(":");
+                    var date1 = new Date(d1[2], d1[1]-1, d1[0], t1[0], t1[1], t1[2]);
+                    var d2 = b.time.split(" ")[0].split("/"), t2 = b.time.split(" ")[1].split(":");
+                    var date2 = new Date(d2[2], d2[1]-1, d2[0], t2[0], t2[1], t2[2]);
+                    return date2 - date1;
+                } catch(e) { return 0; }
+            });
+
+            localStorage.setItem(key, JSON.stringify(localHistory));
+            hienThiNhatKy(typeStr.toLowerCase());
+            alert("Đã đồng bộ xuống thành công! Đã nạp thêm " + newImportCount + " bản ghi mới từ Google Sheets vào thiết bị.");
+        } else {
+            alert("Lỗi tải dữ liệu: " + data.message);
+        }
+    })
+    .catch(error => { alert("Không thể kết nối lấy dữ liệu xuống: " + error); })
+    .finally(() => { btn.innerText = originalText; btn.disabled = false; });
+}
+
+// XUẤT EXCEL OFFLINE
 function xuatExcelCSV(type) {
     var key = type === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
     var history = JSON.parse(localStorage.getItem(key) || '[]');
@@ -878,7 +932,7 @@ function xuatExcelCSV(type) {
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
 
-// IMPORT / EXPORT DỮ LIỆU OFFLINE QUA JSON
+// IMPORT / EXPORT DỮ LIỆU JSON
 function nhapDulieutuJSON(event, type) {
     var file = event.target.files[0]; if (!file) return;
     var reader = new FileReader();
@@ -887,7 +941,6 @@ function nhapDulieutuJSON(event, type) {
             var dataImport = JSON.parse(e.target.result); if(!Array.isArray(dataImport)) throw "Data lỗi";
             var key = type === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
             var currentData = JSON.parse(localStorage.getItem(key) || '[]');
-            
             var merged = currentData.concat(dataImport); var uniqueMap = new Map();
             merged.forEach(item => { item.synced = false; uniqueMap.set(item.time, item); }); 
             var uniqueArr = Array.from(uniqueMap.values());
@@ -899,10 +952,9 @@ function nhapDulieutuJSON(event, type) {
                 var date2 = new Date(d2[2], d2[1]-1, d2[0], t2[0], t2[1], t2[2]);
                 return date2 - date1;
             });
-
             localStorage.setItem(key, JSON.stringify(uniqueArr)); hienThiNhatKy(type);
             alert("Đã nạp thành công " + dataImport.length + " bản ghi dữ liệu!");
-        } catch(err) { alert("Lỗi: File JSON không hợp lệ hoặc bị hỏng!"); }
+        } catch(err) { alert("Lỗi: File JSON không hợp lệ!"); }
     };
     reader.readAsText(file); event.target.value = '';
 }
