@@ -79,7 +79,7 @@
         <button type="button" class="master-tab-btn" id="btn-master-tu" onclick="switchMasterTab('tu')">⚡ MÁY BIẾN ÁP (TU)</button>
     </div>
 
-    <!-- MÁY BIẾN DÒNG (TI) -->
+    <!-- ======================= MÁY BIẾN DÒNG (TI) ======================= -->
     <div id="master-ti" class="master-content active">
         <div class="form-group" style="background: #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #0a3b82;">
             <label style="font-size: 14px; margin-bottom: 8px;">🏷️ TÊN / VỊ TRÍ TRẠM:</label>
@@ -93,6 +93,7 @@
             <button type="button" class="tab-btn ti-tab-btn" onclick="switchSubTab('ti', 'ti_tab3')">3. Lịch Sử & Đồng Bộ</button>
         </div>
 
+        <!-- TI - TAB TỈ SỐ BIẾN -->
         <div id="ti_tab1" class="tab-content ti-tab-content active">
             <div style="background: #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
                 <div style="font-weight:bold; color:#0a3b82; margin-bottom:8px; font-size:13px;">⚙️ TỈ SỐ ĐỊNH MỨC TỪNG CUỘN (A/A):</div>
@@ -103,7 +104,7 @@
                     <div class="ratio-item"><label>Cuộn 4:</label><input type="number" id="ti_ip_n_4" value="2000"> / <input type="number" id="ti_is_n_4" value="1"></div>
                     <div class="ratio-item"><label>Cuộn 5:</label><input type="number" id="ti_ip_n_5" value="2000"> / <input type="number" id="ti_is_n_5" value="1"></div>
                 </div>
-                <div class="grid-2col-input ti-extra-coils" style="display:none; margin-top:8px;">
+                <div class="grid-2col-input ti-extra-ratio" style="display:none; margin-top:8px;">
                     <div class="ratio-item"><label>Cuộn 6:</label><input type="number" id="ti_ip_n_6" value="2000"> / <input type="number" id="ti_is_n_6" value="1"></div>
                     <div class="ratio-item"><label>Cuộn 7:</label><input type="number" id="ti_ip_n_7" value="2000"> / <input type="number" id="ti_is_n_7" value="1"></div>
                     <div class="ratio-item"><label>Cuộn 8:</label><input type="number" id="ti_ip_n_8" value="2000"> / <input type="number" id="ti_is_n_8" value="1"></div>
@@ -112,11 +113,43 @@
             <label class="extra-coils-toggle"><input type="checkbox" id="ti_show_extra_tsb" onchange="toggleExtraCoilsTI('ti_show_extra_tsb')"> TICK HIỂN THỊ THÊM CUỘN 6, 7, 8</label>
             <hr>
             <div style="font-size: 13px; font-weight: 800; color: #0a3b82; margin-bottom: 8px; text-align: center;">📊 NHẬP DÒNG THỨ CẤP (Is) ĐO ĐƯỢC 3 PHA:</div>
+            
             <div id="ti_phas_container_tsb">
-                <div class="pha-card"><div class="pha-title"><span>🟡 PHA A</span></div><div class="grid-3col-input"><div class="coil-item"><label>Cuộn 1</label><input type="number" id="ti_is_a_1" step="any"></div><div class="coil-item"><label>Cuộn 2</label><input type="number" id="ti_is_a_2" step="any"></div><div class="coil-item"><label>Cuộn 3</label><input type="number" id="ti_is_a_3" step="any"></div><div class="coil-item"><label>Cuộn 4</label><input type="number" id="ti_is_a_4" step="any"></div><div class="coil-item"><label>Cuộn 5</label><input type="number" id="ti_is_a_5" step="any"></div></div></div>
-                <div class="pha-card"><div class="pha-title"><span>🟢 PHA B</span></div><div class="grid-3col-input"><div class="coil-item"><label>Cuộn 1</label><input type="number" id="ti_is_b_1" step="any"></div><div class="coil-item"><label>Cuộn 2</label><input type="number" id="ti_is_b_2" step="any"></div><div class="coil-item"><label>Cuộn 3</label><input type="number" id="ti_is_b_3" step="any"></div><div class="coil-item"><label>Cuộn 4</label><input type="number" id="ti_is_b_4" step="any"></div><div class="coil-item"><label>Cuộn 5</label><input type="number" id="ti_is_b_5" step="any"></div></div></div>
-                <div class="pha-card"><div class="pha-title"><span>🔴 PHA C</span></div><div class="grid-3col-input"><div class="coil-item"><label>Cuộn 1</label><input type="number" id="ti_is_c_1" step="any"></div><div class="coil-item"><label>Cuộn 2</label><input type="number" id="ti_is_c_2" step="any"></div><div class="coil-item"><label>Cuộn 3</label><input type="number" id="ti_is_c_3" step="any"></div><div class="coil-item"><label>Cuộn 4</label><input type="number" id="ti_is_c_4" step="any"></div><div class="coil-item"><label>Cuộn 5</label><input type="number" id="ti_is_c_5" step="any"></div></div></div>
+                <!-- PHA A -->
+                <div class="pha-card"><div class="pha-title"><span>🟡 PHA A</span></div><div class="grid-3col-input">
+                    <div class="coil-item"><label>Cuộn 1</label><input type="number" id="ti_is_a_1" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 2</label><input type="number" id="ti_is_a_2" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 3</label><input type="number" id="ti_is_a_3" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 4</label><input type="number" id="ti_is_a_4" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 5</label><input type="number" id="ti_is_a_5" step="any"></div>
+                    <div class="coil-item ti-extra-coil" style="display:none;"><label>Cuộn 6</label><input type="number" id="ti_is_a_6" step="any"></div>
+                    <div class="coil-item ti-extra-coil" style="display:none;"><label>Cuộn 7</label><input type="number" id="ti_is_a_7" step="any"></div>
+                    <div class="coil-item ti-extra-coil" style="display:none;"><label>Cuộn 8</label><input type="number" id="ti_is_a_8" step="any"></div>
+                </div></div>
+                <!-- PHA B -->
+                <div class="pha-card"><div class="pha-title"><span>🟢 PHA B</span></div><div class="grid-3col-input">
+                    <div class="coil-item"><label>Cuộn 1</label><input type="number" id="ti_is_b_1" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 2</label><input type="number" id="ti_is_b_2" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 3</label><input type="number" id="ti_is_b_3" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 4</label><input type="number" id="ti_is_b_4" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 5</label><input type="number" id="ti_is_b_5" step="any"></div>
+                    <div class="coil-item ti-extra-coil" style="display:none;"><label>Cuộn 6</label><input type="number" id="ti_is_b_6" step="any"></div>
+                    <div class="coil-item ti-extra-coil" style="display:none;"><label>Cuộn 7</label><input type="number" id="ti_is_b_7" step="any"></div>
+                    <div class="coil-item ti-extra-coil" style="display:none;"><label>Cuộn 8</label><input type="number" id="ti_is_b_8" step="any"></div>
+                </div></div>
+                <!-- PHA C -->
+                <div class="pha-card"><div class="pha-title"><span>🔴 PHA C</span></div><div class="grid-3col-input">
+                    <div class="coil-item"><label>Cuộn 1</label><input type="number" id="ti_is_c_1" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 2</label><input type="number" id="ti_is_c_2" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 3</label><input type="number" id="ti_is_c_3" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 4</label><input type="number" id="ti_is_c_4" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 5</label><input type="number" id="ti_is_c_5" step="any"></div>
+                    <div class="coil-item ti-extra-coil" style="display:none;"><label>Cuộn 6</label><input type="number" id="ti_is_c_6" step="any"></div>
+                    <div class="coil-item ti-extra-coil" style="display:none;"><label>Cuộn 7</label><input type="number" id="ti_is_c_7" step="any"></div>
+                    <div class="coil-item ti-extra-coil" style="display:none;"><label>Cuộn 8</label><input type="number" id="ti_is_c_8" step="any"></div>
+                </div></div>
             </div>
+            
             <button class="btn-calc" onclick="tinhTisoTI()">TÍNH TỈ SỐ & KIỂM TRA SAI SỐ TI</button>
             <div id="ti_result_tiso" class="result-box">
                 <div id="ti_alert_box" class="alert-banner"></div>
@@ -124,6 +157,7 @@
             </div>
         </div>
 
+        <!-- TI - TAB QUY ĐỔI R1C -->
         <div id="ti_tab2" class="tab-content ti-tab-content">
             <div class="form-group" style="background: #e2e8f0; padding: 12px; border-radius: 8px;">
                 <label>📐 Vật liệu cuộn dây (Hằng số T):</label>
@@ -135,11 +169,43 @@
             <label class="extra-coils-toggle"><input type="checkbox" id="ti_show_extra_r1c" onchange="toggleExtraCoilsTI('ti_show_extra_r1c')"> TICK HIỂN THỊ THÊM CUỘN 6, 7, 8</label>
             <hr>
             <div style="font-size: 13px; font-weight: 800; color: #0a3b82; margin-bottom: 8px; text-align: center;">📊 NHẬP NHIỆT ĐỘ (°C) & ĐIỆN TRỞ R1C (Ω):</div>
+            
             <div id="ti_phas_container_r1c">
-                <div class="pha-card"><div class="pha-title"><span>🟡 PHA A</span><span>🌡️ T (°C): <input type="number" id="ti_temp_a_r1c" value="30" style="width:55px;"></span></div><div class="grid-3col-input"><div class="coil-item"><label>Cuộn 1</label><input type="number" id="ti_r_a_1" step="any"></div><div class="coil-item"><label>Cuộn 2</label><input type="number" id="ti_r_a_2" step="any"></div><div class="coil-item"><label>Cuộn 3</label><input type="number" id="ti_r_a_3" step="any"></div><div class="coil-item"><label>Cuộn 4</label><input type="number" id="ti_r_a_4" step="any"></div><div class="coil-item"><label>Cuộn 5</label><input type="number" id="ti_r_a_5" step="any"></div></div></div>
-                <div class="pha-card"><div class="pha-title"><span>🟢 PHA B</span><span>🌡️ T (°C): <input type="number" id="ti_temp_b_r1c" value="30" style="width:55px;"></span></div><div class="grid-3col-input"><div class="coil-item"><label>Cuộn 1</label><input type="number" id="ti_r_b_1" step="any"></div><div class="coil-item"><label>Cuộn 2</label><input type="number" id="ti_r_b_2" step="any"></div><div class="coil-item"><label>Cuộn 3</label><input type="number" id="ti_r_b_3" step="any"></div><div class="coil-item"><label>Cuộn 4</label><input type="number" id="ti_r_b_4" step="any"></div><div class="coil-item"><label>Cuộn 5</label><input type="number" id="ti_r_b_5" step="any"></div></div></div>
-                <div class="pha-card"><div class="pha-title"><span>🔴 PHA C</span><span>🌡️ T (°C): <input type="number" id="ti_temp_c_r1c" value="30" style="width:55px;"></span></div><div class="grid-3col-input"><div class="coil-item"><label>Cuộn 1</label><input type="number" id="ti_r_c_1" step="any"></div><div class="coil-item"><label>Cuộn 2</label><input type="number" id="ti_r_c_2" step="any"></div><div class="coil-item"><label>Cuộn 3</label><input type="number" id="ti_r_c_3" step="any"></div><div class="coil-item"><label>Cuộn 4</label><input type="number" id="ti_r_c_4" step="any"></div><div class="coil-item"><label>Cuộn 5</label><input type="number" id="ti_r_c_5" step="any"></div></div></div>
+                <!-- PHA A -->
+                <div class="pha-card"><div class="pha-title"><span>🟡 PHA A</span><span>🌡️ T (°C): <input type="number" id="ti_temp_a_r1c" value="30" style="width:55px;"></span></div><div class="grid-3col-input">
+                    <div class="coil-item"><label>Cuộn 1</label><input type="number" id="ti_r_a_1" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 2</label><input type="number" id="ti_r_a_2" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 3</label><input type="number" id="ti_r_a_3" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 4</label><input type="number" id="ti_r_a_4" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 5</label><input type="number" id="ti_r_a_5" step="any"></div>
+                    <div class="coil-item ti-extra-coil" style="display:none;"><label>Cuộn 6</label><input type="number" id="ti_r_a_6" step="any"></div>
+                    <div class="coil-item ti-extra-coil" style="display:none;"><label>Cuộn 7</label><input type="number" id="ti_r_a_7" step="any"></div>
+                    <div class="coil-item ti-extra-coil" style="display:none;"><label>Cuộn 8</label><input type="number" id="ti_r_a_8" step="any"></div>
+                </div></div>
+                <!-- PHA B -->
+                <div class="pha-card"><div class="pha-title"><span>🟢 PHA B</span><span>🌡️ T (°C): <input type="number" id="ti_temp_b_r1c" value="30" style="width:55px;"></span></div><div class="grid-3col-input">
+                    <div class="coil-item"><label>Cuộn 1</label><input type="number" id="ti_r_b_1" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 2</label><input type="number" id="ti_r_b_2" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 3</label><input type="number" id="ti_r_b_3" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 4</label><input type="number" id="ti_r_b_4" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 5</label><input type="number" id="ti_r_b_5" step="any"></div>
+                    <div class="coil-item ti-extra-coil" style="display:none;"><label>Cuộn 6</label><input type="number" id="ti_r_b_6" step="any"></div>
+                    <div class="coil-item ti-extra-coil" style="display:none;"><label>Cuộn 7</label><input type="number" id="ti_r_b_7" step="any"></div>
+                    <div class="coil-item ti-extra-coil" style="display:none;"><label>Cuộn 8</label><input type="number" id="ti_r_b_8" step="any"></div>
+                </div></div>
+                <!-- PHA C -->
+                <div class="pha-card"><div class="pha-title"><span>🔴 PHA C</span><span>🌡️ T (°C): <input type="number" id="ti_temp_c_r1c" value="30" style="width:55px;"></span></div><div class="grid-3col-input">
+                    <div class="coil-item"><label>Cuộn 1</label><input type="number" id="ti_r_c_1" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 2</label><input type="number" id="ti_r_c_2" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 3</label><input type="number" id="ti_r_c_3" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 4</label><input type="number" id="ti_r_c_4" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 5</label><input type="number" id="ti_r_c_5" step="any"></div>
+                    <div class="coil-item ti-extra-coil" style="display:none;"><label>Cuộn 6</label><input type="number" id="ti_r_c_6" step="any"></div>
+                    <div class="coil-item ti-extra-coil" style="display:none;"><label>Cuộn 7</label><input type="number" id="ti_r_c_7" step="any"></div>
+                    <div class="coil-item ti-extra-coil" style="display:none;"><label>Cuộn 8</label><input type="number" id="ti_r_c_8" step="any"></div>
+                </div></div>
             </div>
+            
             <button class="btn-calc" onclick="tinhR1CTI()">QUY ĐỔI VỀ 75°C & KIỂM TRA ĐỘ LỆCH PHA TI</button>
             <div id="ti_result_r1c" class="result-box">
                 <div id="ti_alert_box_r1c" class="alert-banner"></div>
@@ -147,6 +213,7 @@
             </div>
         </div>
 
+        <!-- TI - TAB LỊCH SỬ & ĐỒNG BỘ -->
         <div id="ti_tab3" class="tab-content ti-tab-content">
             <div style="font-weight: 800; color: #0a3b82; margin-bottom: 10px; font-size: 15px;">LỊCH SỬ THIẾT BỊ (TI)</div>
             <button class="btn-cloud-up" onclick="dongBoCloudUp('TI')">☁️ ĐỒNG BỘ LÊN CLOUD (SHEETS)</button>
@@ -162,7 +229,7 @@
         </div>
     </div>
 
-    <!-- MÁY BIẾN ÁP (TU) -->
+    <!-- ======================= MÁY BIẾN ÁP (TU) ======================= -->
     <div id="master-tu" class="master-content">
         <div class="form-group" style="background: #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #0a3b82;">
             <label style="font-size: 14px; margin-bottom: 8px;">🏷️ TÊN / VỊ TRÍ TRẠM:</label>
@@ -354,10 +421,23 @@ function checkHistoryDrift(type, currentTag, currentData, dataType) {
     return alertStr;
 }
 
+// 📌 Tự động Toggle ẩn hiện cho Cuộn 6, 7, 8
 function toggleExtraCoilsTI(sourceId) {
     var isChecked = document.getElementById(sourceId).checked;
-    document.getElementById('ti_show_extra_tsb').checked = isChecked; document.getElementById('ti_show_extra_r1c').checked = isChecked;
-    var extras = document.querySelectorAll('.ti-extra-coils'); for (var i = 0; i < extras.length; i++) { extras[i].style.display = isChecked ? 'grid' : 'none'; }
+    document.getElementById('ti_show_extra_tsb').checked = isChecked; 
+    document.getElementById('ti_show_extra_r1c').checked = isChecked;
+    
+    // Toggle cho khối tỷ số định mức
+    var extraRatios = document.querySelectorAll('.ti-extra-ratio'); 
+    for (var i = 0; i < extraRatios.length; i++) { 
+        extraRatios[i].style.display = isChecked ? 'grid' : 'none'; 
+    }
+    
+    // Toggle cho các ô nhập liệu của pha A, B, C
+    var extraCoils = document.querySelectorAll('.ti-extra-coil'); 
+    for (var i = 0; i < extraCoils.length; i++) { 
+        extraCoils[i].style.display = isChecked ? 'flex' : 'none'; 
+    }
 }
 
 function tinhTisoTI() {
@@ -374,7 +454,8 @@ function tinhTisoTI() {
         var rowHasData = false; var rowCells = ""; var logLine = "Cuon " + i + ": ";
         
         for (var p = 0; p < 3; p++) {
-            var is_test = parseFloat(document.getElementById('ti_is_' + phases[p] + '_' + i).value);
+            var input_elem = document.getElementById('ti_is_' + phases[p] + '_' + i);
+            var is_test = input_elem ? parseFloat(input_elem.value) : NaN;
             if (!isNaN(is_test) && is_test > 0) {
                 rowHasData = true; hasData = true;
                 var saiso = ((is_test - is_n) / is_n) * 100;
@@ -421,7 +502,8 @@ function tinhR1CTI() {
     for (var i = 1; i <= maxCoils; i++) {
         var rowHasData = false; var rowCells = ""; var logLine = "Cuon " + i + ": "; var r_75_arr = [];
         for (var p = 0; p < 3; p++) {
-            var r_test = parseFloat(document.getElementById('ti_r_' + phases[p] + '_' + i).value);
+            var input_elem = document.getElementById('ti_r_' + phases[p] + '_' + i);
+            var r_test = input_elem ? parseFloat(input_elem.value) : NaN;
             if (!isNaN(r_test)) {
                 rowHasData = true; hasData = true;
                 var r_75 = r_test * k_factors[p]; r_75_arr.push(r_75);
