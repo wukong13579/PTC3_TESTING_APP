@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thí Nghiệm TU & TI - PTC3 EVNNPT</title>
+    <title>Thí Nghiệm TU & TI - TRUYỀN TẢI ĐIỆN 3 (PTC3)</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f7fa; margin: 0; padding: 12px; padding-bottom: 50px; color: #2d3748; }
@@ -71,7 +71,7 @@
 <div class="card">
     <div class="brand-header">
         <img src="image_da12fe.png" alt="EVNNPT PTC3 Logo" class="brand-logo" onerror="this.style.display='none'">
-        <div class="app-title">THÍ NGHIỆM TU & TI - PTC3 (STABLE 2-WAY CLOUD)</div>
+        <div class="app-title">THÍ NGHIỆM TU & TI - TRUYỀN TẢI ĐIỆN 3 (PTC3)</div>
     </div>
     
     <div class="master-tab-group">
@@ -246,8 +246,8 @@
 </div>
 
 <script>
-// ĐÃ CẬP NHẬT LINK WEB APP MỚI NHẤT
-const CLOUD_URL = "https://script.google.com/macros/s/AKfycbxuAFppvtA-xNb1Sx1PkNNZMubN7as0LRtmvLfQVug6BmSYlVKiBYZzqVbUAbe1FmdI/exec";
+// LINK WEB APP CLOUD MỚI NHẤT
+const CLOUD_URL = "https://script.google.com/macros/s/AKfycbxuggV19iKUb2YZKF-UFmz9WzMBmdML_rlMNiH9eL1TWvhHICQ8ICvUTcVlkev2nJY4/exec";
 
 function switchMasterTab(type) {
     document.getElementById('btn-master-ti').classList.remove('active'); document.getElementById('btn-master-tu').classList.remove('active');
@@ -508,7 +508,7 @@ function dongBoCloudUp(typeStr) {
     .finally(() => { btn.innerText = originalText; btn.disabled = false; });
 }
 
-// 2. TẢI DỮ LIỆU XUỐNG TỪ CLOUD (POST action=download)
+// 2. TẢI DỮ LIỆU XUỐNG TỪ CLOUD
 function dongBoCloudDown(typeStr) {
     if (!CLOUD_URL) { alert("Chưa cấu hình link Cloud!"); return; }
     var payload = { action: "download" };
@@ -522,23 +522,27 @@ function dongBoCloudDown(typeStr) {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.status === "success") {
-            var cloudRows = typeStr === 'TI' ? data.data.ti : data.data.tu;
-            if (!cloudRows || cloudRows.length === 0) { alert("Google Sheets chưa có dữ liệu " + typeStr + " nào!"); return; }
+        if (data && data.status === "success" && data.data) {
+            var cloudRows = (typeStr.toUpperCase() === 'TI') ? data.data.ti : data.data.tu;
+            if (!cloudRows || !Array.isArray(cloudRows) || cloudRows.length === 0) { 
+                alert("Google Sheets chưa có dữ liệu " + typeStr + " nào hoặc định dạng trống!"); 
+                return; 
+            }
 
             var key = typeStr.toLowerCase() === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
             var localHistory = JSON.parse(localStorage.getItem(key) || '[]');
             var count = 0;
 
             cloudRows.forEach(row => {
-                var timeVal = row[0], tagVal = row[1], typeVal = row[2], tsbD = row[3], r1cD = row[4], maxT = row[5], maxR = row[6];
+                if (!row || row.length < 3) return;
+                var timeVal = row[0] || "", tagVal = row[1] || "Không rõ", typeVal = row[2] || "", tsbD = row[3] || "", r1cD = row[4] || "", maxT = row[5], maxR = row[6];
                 var exists = localHistory.some(h => h.time === timeVal && h.tag.toUpperCase() === tagVal.toUpperCase());
                 if (!exists) {
                     localHistory.push({
                         time: timeVal, tag: tagVal, type: typeVal, synced: true,
                         tsbHtml: "", r1cHtml: "", tsbDetail: tsbD, r1cDetail: r1cD,
-                        rawTSB: maxT !== "" ? { maxError: parseFloat(maxT) } : null,
-                        rawR1C: maxR !== "" ? { maxLech: parseFloat(maxR) } : null
+                        rawTSB: (maxT !== "" && maxT !== undefined && !isNaN(maxT)) ? { maxError: parseFloat(maxT) } : null,
+                        rawR1C: (maxR !== "" && maxR !== undefined && !isNaN(maxR)) ? { maxLech: parseFloat(maxR) } : null
                     });
                     count++;
                 }
@@ -547,9 +551,11 @@ function dongBoCloudDown(typeStr) {
             localStorage.setItem(key, JSON.stringify(localHistory));
             hienThiNhatKy(typeStr.toLowerCase());
             alert("Tải xuống thành công! Đã nạp thêm " + count + " bản ghi từ Google Sheets.");
-        } else { alert("Lỗi tải xuống: " + data.message); }
+        } else { 
+            alert("Lỗi tải xuống từ Server: " + (data ? data.message : "Phản hồi không hợp lệ")); 
+        }
     })
-    .catch(err => alert("Lỗi kết nối: " + err))
+    .catch(err => alert("Lỗi kết nối mạng: " + err))
     .finally(() => { btn.innerText = originalText; btn.disabled = false; });
 }
 
