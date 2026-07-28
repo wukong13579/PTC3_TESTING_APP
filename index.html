@@ -282,8 +282,9 @@ document.addEventListener("DOMContentLoaded", function() {
     phases.forEach((p, idx) => {
         let coils = '';
         for(let i=1; i<=8; i++) {
-            let extra = i > 5 ? 'ti-extra-coil" style="display:none;"' : '"';
-            coils += `<div class="coil-item ${extra}"><label>Cuộn ${i}</label><input type="number" id="ti_is_${p}_${i}" step="any"></div>`;
+            let extraClass = i > 5 ? ' ti-extra-coil' : '';
+            let extraStyle = i > 5 ? ' style="display:none;"' : '';
+            coils += `<div class="coil-item${extraClass}"${extraStyle}><label>Cuộn ${i}</label><input type="number" id="ti_is_${p}_${i}" step="any"></div>`;
         }
         tiTsbHtml += `<div class="pha-card"><div class="pha-title"><span>${phaseIcons[idx]}</span></div><div class="grid-3col-input">${coils}</div></div>`;
     });
@@ -294,8 +295,9 @@ document.addEventListener("DOMContentLoaded", function() {
     phases.forEach((p, idx) => {
         let coils = '';
         for(let i=1; i<=8; i++) {
-            let extra = i > 5 ? 'ti-extra-coil" style="display:none;"' : '"';
-            coils += `<div class="coil-item ${extra}"><label>Cuộn ${i}</label><input type="number" id="ti_r_${p}_${i}" step="any"></div>`;
+            let extraClass = i > 5 ? ' ti-extra-coil' : '';
+            let extraStyle = i > 5 ? ' style="display:none;"' : '';
+            coils += `<div class="coil-item${extraClass}"${extraStyle}><label>Cuộn ${i}</label><input type="number" id="ti_r_${p}_${i}" step="any"></div>`;
         }
         tiR1cHtml += `<div class="pha-card"><div class="pha-title"><span>${phaseIcons[idx]}</span><span>🌡️ T (°C): <input type="number" id="ti_temp_${p}_r1c" value="30" style="width:55px;"></span></div><div class="grid-3col-input">${coils}</div></div>`;
     });
@@ -336,7 +338,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     document.getElementById('tu_phas_container_r1c').innerHTML = tuR1cHtml;
     
-    // Đăng ký Event Delegation cho tab
+    // Đăng ký Event Delegation cho các tab Master
     document.addEventListener('click', function(e) {
         if (e.target && e.target.matches('[data-action="master-tab"]')) {
             switchMasterTab(e.target.dataset.type);
@@ -492,7 +494,7 @@ function tinhTisoTI() {
     luuVaoLocalStorage('ti', { time: layThoiGian(), type: "Tỉ Số Biến TI", tag: tag, detail: detailLog, tableHtml: document.getElementById('ti_result_table_body').parentNode.outerHTML, rawData: rawDataTSB });
 }
 
-function tinhR1CTI() {
+function tinhR1CTTI() {
     var tag = document.getElementById('ti_name_global').value.trim() || "TI Chưa Rõ Tên";
     var T_const = parseFloat(getRadioValue('material_ti'));
     var phases = ['a', 'b', 'c']; var phaseNames = ['Pha A', 'Pha B', 'Pha C'];
