@@ -95,7 +95,7 @@
 
         <div id="ti_tab1" class="tab-content ti-tab-content active">
             <div style="background: #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                <div style="font-weight:bold; color:#0a3b82; margin-bottom:8px; font-size:13px;">⚙️ TỈ SỐ ĐỊNH MỨC TỪNG CUỘN (A/A) & CẤP CHÍNH XÁC:</div>
+                <div style="font-weight:bold; color:#0a3b82; margin-bottom:8px; font-size:13px;">⚙️ TỈ SỐ ĐỊNH MỨC TỪNG CUỘN (A/A):</div>
                 <div class="grid-2col-input">
                     <div class="ratio-item"><label>Cuộn 1:</label><input type="number" id="ti_ip_n_1" value="2000"> / <input type="number" id="ti_is_n_1" value="1"></div>
                     <div class="ratio-item"><label>Cuộn 2:</label><input type="number" id="ti_ip_n_2" value="2000"> / <input type="number" id="ti_is_n_2" value="1"></div>
@@ -183,23 +183,38 @@
                     <div class="radio-tile"><input type="radio" name="tu_un_so" id="so_35" value="35"><label for="so_35">35kV</label></div>
                     <div class="radio-tile"><input type="radio" name="tu_un_so" id="so_110" value="110" checked><label for="so_110">110kV</label></div>
                     <div class="radio-tile"><input type="radio" name="tu_un_so" id="so_220" value="220"><label for="so_220">220kV</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_so" id="so_500" value="500"><label for="so_500">500kV</label></div>
                 </div>
             </div>
+
+            <!-- BỔ SUNG ĐẦY ĐỦ CHO CUỘN THỨ 1 -->
             <div class="form-group"><label>🔌 Cuộn Thứ 1:</label>
                 <div class="radio-tile-group">
                     <div class="radio-tile"><input type="radio" name="tu_un_thu1" id="t1_110_sqrt3" value="110_sqrt3" checked><label for="t1_110_sqrt3">110/√3</label></div>
                     <div class="radio-tile"><input type="radio" name="tu_un_thu1" id="t1_100_sqrt3" value="100_sqrt3"><label for="t1_100_sqrt3">100/√3</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu1" id="t1_110_3" value="110_3"><label for="t1_110_3">110/3</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu1" id="t1_100_3" value="100_3"><label for="t1_100_3">100/3</label></div>
                 </div>
             </div>
+
+            <!-- BỔ SUNG ĐẦY ĐỦ CHO CUỘN THỨ 2 -->
             <div class="form-group"><label>🔌 Cuộn Thứ 2:</label>
                 <div class="radio-tile-group">
                     <div class="radio-tile"><input type="radio" name="tu_un_thu2" id="t2_110_sqrt3" value="110_sqrt3" checked><label for="t2_110_sqrt3">110/√3</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu2" id="t2_100_sqrt3" value="100_sqrt3"><label for="t2_100_sqrt3">100/√3</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu2" id="t2_110_3" value="110_3"><label for="t2_110_3">110/3</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu2" id="t2_100_3" value="100_3"><label for="t2_100_3">100/3</label></div>
                     <div class="radio-tile"><input type="radio" name="tu_un_thu2" id="t2_none" value="none"><label for="t2_none">❌ Tắt</label></div>
                 </div>
             </div>
+
+            <!-- BỔ SUNG ĐẦY ĐỦ CHO CUỘN THỨ 3 -->
             <div class="form-group"><label>🔌 Cuộn Thứ 3:</label>
                 <div class="radio-tile-group">
                     <div class="radio-tile"><input type="radio" name="tu_un_thu3" id="t3_100_3" value="100_3" checked><label for="t3_100_3">100/3</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu3" id="t3_110_3" value="110_3"><label for="t3_110_3">110/3</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu3" id="t3_110_sqrt3" value="110_sqrt3"><label for="t3_110_sqrt3">110/√3</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu3" id="t3_100_sqrt3" value="100_sqrt3"><label for="t3_100_sqrt3">100/√3</label></div>
                     <div class="radio-tile"><input type="radio" name="tu_un_thu3" id="t3_none" value="none"><label for="t3_none">❌ Tắt</label></div>
                 </div>
             </div>
@@ -312,13 +327,11 @@ function luuVaoLocalStorage(type, record) {
     localStorage.setItem(key, JSON.stringify(history));
 }
 
-// 📌 HÀM ĐÁNH GIÁ CBM & CẢNH BÁO LỊCH SỬ / XUẤT XƯỞNG
 function checkHistoryDrift(type, currentTag, currentData, dataType) {
     var key = type === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
     var history = JSON.parse(localStorage.getItem(key) || '[]');
     var alertStr = ""; var today = layThoiGian().split(" ")[0];
     
-    // Tìm các bản ghi cũ của cùng thiết bị / trạm
     var oldRecord = history.find(r => r.tag.replace(/\s/g,'').toUpperCase() === currentTag.replace(/\s/g,'').toUpperCase() && r.time.split(" ")[0] !== today);
     
     if (oldRecord) {
@@ -348,7 +361,6 @@ function toggleExtraCoilsTI(sourceId) {
     var extras = document.querySelectorAll('.ti-extra-coils'); for (var i = 0; i < extras.length; i++) { extras[i].style.display = isChecked ? 'grid' : 'none'; }
 }
 
-// 📌 TÍNH TỈ SỐ BIẾN TI & CẢNH BÁO CẤP CHÍNH XÁC
 function tinhTisoTI() {
     var tag = document.getElementById('ti_name_global').value.trim() || "TI Chưa Rõ Tên";
     var maxCoils = document.getElementById('ti_show_extra_tsb').checked ? 8 : 5;
@@ -371,7 +383,6 @@ function tinhTisoTI() {
                 var Ratio_P_Actual = (ip_n / is_test) * is_n;
                 var saisoDisplay = (saiso > 0 ? "+" : "") + saiso.toFixed(3) + "%";
                 
-                // Quy chuẩn cảnh báo: Cuộn đo lường (thường <= 0.2% hoặc 0.5%), bảo vệ (1.0% - 3.0%)
                 var isHighError = Math.abs(saiso) > 0.5; 
                 if (isHighError) {
                     hasAlert = true;
@@ -395,7 +406,6 @@ function tinhTisoTI() {
     luuVaoLocalStorage('ti', { time: layThoiGian(), type: "Tỉ Số Biến TI", tag: tag, detail: detailLog, tableHtml: document.getElementById('ti_result_table_body').parentNode.outerHTML, rawData: rawDataTSB });
 }
 
-// 📌 QUY ĐỔI R1C TI & CẢNH BÁO ĐỘ LỆCH PHA (>10%)
 function tinhR1CTI() {
     var tag = document.getElementById('ti_name_global').value.trim() || "TI Chưa Rõ Tên";
     var T_const = parseFloat(getRadioValue('material_ti'));
@@ -420,7 +430,6 @@ function tinhR1CTI() {
             } else { rowCells += "<td>-</td>"; }
         }
         
-        // KIỂM TRA ĐỘ LỆCH PHA (Rmax - Rmin)/Rmin * 100%
         if (r_75_arr.length >= 2) {
             var maxR = Math.max.apply(null, r_75_arr); var minR = Math.min.apply(null, r_75_arr);
             var lech = ((maxR - minR) / minR) * 100;
@@ -443,13 +452,20 @@ function tinhR1CTI() {
     luuVaoLocalStorage('ti', { time: layThoiGian(), type: "Quy Đổi R1C TI", tag: tag, detail: detailLog, tableHtml: document.getElementById('ti_result_r1c_body').parentNode.outerHTML, rawData: rawDataR1C });
 }
 
+// 📌 TÍNH TOÁN $K_n$ TU ĐẦY ĐỦ CÁC CẤP ĐIỆN ÁP NHỊ THỨ
 function getKnTU(val_so, val_thu_type) {
     if (!val_thu_type || val_thu_type === 'none') return null;
-    var un_so_v = (val_so * 1000) / Math.sqrt(3); var un_thu_v = (val_thu_type === "110_sqrt3") ? (110 / Math.sqrt(3)) : (100 / Math.sqrt(3));
-    return un_so_v / un_thu_v;
+    var un_so_v = (val_so * 1000) / Math.sqrt(3); 
+    var un_thu_v = 0;
+    
+    if (val_thu_type === "110_sqrt3") un_thu_v = 110 / Math.sqrt(3);
+    else if (val_thu_type === "100_sqrt3") un_thu_v = 100 / Math.sqrt(3);
+    else if (val_thu_type === "110_3") un_thu_v = 110 / 3;
+    else if (val_thu_type === "100_3") un_thu_v = 100 / 3;
+
+    return un_thu_v > 0 ? (un_so_v / un_thu_v) : null;
 }
 
-// 📌 TÍNH TỈ SỐ BIẾN TU & CẢNH BÁO
 function tinhTisoTU() {
     var tag = document.getElementById('tu_name_global').value.trim() || "TU Chưa Rõ Tên";
     var val_so = parseFloat(getRadioValue('tu_un_so'));
@@ -495,7 +511,6 @@ function tinhTisoTU() {
     luuVaoLocalStorage('tu', { time: layThoiGian(), type: "Tỉ Số Biến TU", tag: tag, detail: detailLog, tableHtml: document.getElementById('tu_result_table_body').parentNode.outerHTML, rawData: rawDataTSB });
 }
 
-// 📌 QUY ĐỔI R1C TU & CẢNH BÁO ĐỘ LỆCH PHA (>10%)
 function tinhR1CTU() {
     var tag = document.getElementById('tu_name_global').value.trim() || "TU Chưa Rõ Tên";
     var T_const = parseFloat(getRadioValue('tu_material'));
