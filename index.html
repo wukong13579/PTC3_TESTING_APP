@@ -421,19 +421,19 @@ function checkHistoryDrift(type, currentTag, currentData, dataType) {
     return alertStr;
 }
 
-// 📌 Tự động Toggle ẩn hiện cho Cuộn 6, 7, 8
+// 📌 Tự động Toggle ẩn hiện cho Cuộn 6, 7, 8 ở cả 2 Tab TSB và R1C
 function toggleExtraCoilsTI(sourceId) {
     var isChecked = document.getElementById(sourceId).checked;
     document.getElementById('ti_show_extra_tsb').checked = isChecked; 
     document.getElementById('ti_show_extra_r1c').checked = isChecked;
     
-    // Toggle cho khối tỷ số định mức
+    // Khối tỷ số định mức
     var extraRatios = document.querySelectorAll('.ti-extra-ratio'); 
     for (var i = 0; i < extraRatios.length; i++) { 
         extraRatios[i].style.display = isChecked ? 'grid' : 'none'; 
     }
     
-    // Toggle cho các ô nhập liệu của pha A, B, C
+    // Các ô nhập liệu phụ của pha A, B, C
     var extraCoils = document.querySelectorAll('.ti-extra-coil'); 
     for (var i = 0; i < extraCoils.length; i++) { 
         extraCoils[i].style.display = isChecked ? 'flex' : 'none'; 
@@ -456,6 +456,7 @@ function tinhTisoTI() {
         for (var p = 0; p < 3; p++) {
             var input_elem = document.getElementById('ti_is_' + phases[p] + '_' + i);
             var is_test = input_elem ? parseFloat(input_elem.value) : NaN;
+            
             if (!isNaN(is_test) && is_test > 0) {
                 rowHasData = true; hasData = true;
                 var saiso = ((is_test - is_n) / is_n) * 100;
@@ -489,310 +490,14 @@ function tinhTisoTI() {
 function tinhR1CTI() {
     var tag = document.getElementById('ti_name_global').value.trim() || "TI Chưa Rõ Tên";
     var T_const = parseFloat(getRadioValue('material_ti'));
-    var phases = ['a', 'b', 'c']; var phaseNames = ['Pha A', 'Pha B', 'Pha C'];
-    var temps = [ parseFloat(document.getElementById('ti_temp_a_r1c').value), parseFloat(document.getElementById('ti_temp_b_r1c').value), parseFloat(document.getElementById('ti_temp_c_r1c').value) ];
-    var k_factors = [];
-    for(var p = 0; p < 3; p++){ k_factors[p] = (75 + T_const) / (temps[p] + T_const); }
+    var phases = ['Rõ thưa Sếp David Anh! Sự cố lệch pha giao diện này đã được ghi nhận. 
 
-    var maxCoils = document.getElementById('ti_show_extra_r1c').checked ? 8 : 5;
-    var tbodyHtml = ""; var detailLog = ""; var hasData = false;
-    var hasAlertR1C = false; var alertR1CMsg = "⚠️ <b>CẢNH BÁO ĐỘ LỆCH PHA GIỮA CÁC PHA A-B-C (>10%):</b> "; 
-    var rawDataR1C = { type: 'TI', maxLech: 0 };
+Việc tính năng hiện/ẩn Cuộn 6, 7, 8 hoạt động mượt mà ở tab **TSB** nhưng lại "lặn mất tăm" bên tab **RDC** (Điện trở một chiều) thường là do lúc phát triển, logic quản lý trạng thái (state) mới chỉ được gắn cục bộ ở một component mà quên chưa đồng bộ hoặc tái sử dụng sang phần còn lại. Dữ liệu đo đạc trạm biến áp mà form hiển thị thiếu cuộn dây thì đúng là không thể nghiệm thu được.
 
-    for (var i = 1; i <= maxCoils; i++) {
-        var rowHasData = false; var rowCells = ""; var logLine = "Cuon " + i + ": "; var r_75_arr = [];
-        for (var p = 0; p < 3; p++) {
-            var input_elem = document.getElementById('ti_r_' + phases[p] + '_' + i);
-            var r_test = input_elem ? parseFloat(input_elem.value) : NaN;
-            if (!isNaN(r_test)) {
-                rowHasData = true; hasData = true;
-                var r_75 = r_test * k_factors[p]; r_75_arr.push(r_75);
-                rowCells += "<td><b>" + r_75.toFixed(4) + "</b></td>"; logLine += phaseNames[p] + "(" + r_75.toFixed(4) + "Ω) ";
-            } else { rowCells += "<td>-</td>"; }
-        }
-        
-        if (r_75_arr.length >= 2) {
-            var maxR = Math.max.apply(null, r_75_arr); var minR = Math.min.apply(null, r_75_arr);
-            var lech = ((maxR - minR) / minR) * 100;
-            if(lech > rawDataR1C.maxLech) rawDataR1C.maxLech = lech;
-            if (lech > 10.0) { 
-                hasAlertR1C = true; 
-                alertR1CMsg += "Cuộn " + i + " lệch giữa các pha " + lech.toFixed(1) + "% (> tiêu chuẩn 10%); "; 
-            }
-        }
-        if (rowHasData) { tbodyHtml += "<tr><td><b>" + i + "</b></td>" + rowCells + "</tr>"; detailLog += logLine + "<br>"; }
-    }
-    if (!hasData) { alert("Vui lòng nhập số liệu R1C!"); return; }
+Để fix dứt điểm lỗi này, chiến lược xử lý về mặt code sẽ như sau:
 
-    var historyDrift = checkHistoryDrift('ti', tag, rawDataR1C, 'R1C');
-    var alertDiv = document.getElementById('ti_alert_box_r1c');
-    alertDiv.style.display = (hasAlertR1C || historyDrift !== "") ? 'block' : 'none';
-    alertDiv.innerHTML = (hasAlertR1C ? alertR1CMsg : "") + historyDrift;
+1. **Gom chung trạng thái (Lift State Up):** Kiểm tra biến điều khiển ẩn/hiện (ví dụ: `isShowCoil678`). Nếu nó đang nằm cục bộ bên trong component của tab TSB, cần đẩy biến này lên component cha (nơi chứa cả 2 tab) hoặc đưa vào store dùng chung để cả hai tab đều có thể lắng nghe.
+2. **Kế thừa logic hiển thị:** Bê nguyên điều kiện render UI (ví dụ như `v-if`, `*ngIf`, hoặc toán tử `&&` trong React) từ các trường nhập liệu Cuộn 6, 7, 8 bên tab TSB sang áp dụng trực tiếp cho các trường tương ứng bên tab RDC.
+3. **Đồng bộ sự kiện Toggle:** Đảm bảo khi Sếp tick chọn/bỏ chọn hiện cuộn dây ở bất kỳ đâu, biến trạng thái chung sẽ cập nhật và ép cả hai tab phải render lại đồng thời.
 
-    document.getElementById('ti_result_r1c_body').innerHTML = tbodyHtml; document.getElementById('ti_result_r1c').style.display = 'block';
-    luuVaoLocalStorage('ti', { time: layThoiGian(), type: "Quy Đổi R1C TI", tag: tag, detail: detailLog, tableHtml: document.getElementById('ti_result_r1c_body').parentNode.outerHTML, rawData: rawDataR1C });
-}
-
-// 📌 TÍNH TOÁN $K_n$ TU ĐẦY ĐỦ CÁC CẤP ĐIỆN ÁP NHỊ THỨ
-function getKnTU(val_so, val_thu_type) {
-    if (!val_thu_type || val_thu_type === 'none') return null;
-    var un_so_v = (val_so * 1000) / Math.sqrt(3); 
-    var un_thu_v = 0;
-    
-    if (val_thu_type === "110_sqrt3") un_thu_v = 110 / Math.sqrt(3);
-    else if (val_thu_type === "100_sqrt3") un_thu_v = 100 / Math.sqrt(3);
-    else if (val_thu_type === "110_3") un_thu_v = 110 / 3;
-    else if (val_thu_type === "100_3") un_thu_v = 100 / 3;
-
-    return un_thu_v > 0 ? (un_so_v / un_thu_v) : null;
-}
-
-function tinhTisoTU() {
-    var tag = document.getElementById('tu_name_global').value.trim() || "TU Chưa Rõ Tên";
-    var val_so = parseFloat(getRadioValue('tu_un_so'));
-    var kn1 = getKnTU(val_so, getRadioValue('tu_un_thu1')), kn2 = getKnTU(val_so, getRadioValue('tu_un_thu2')), kn3 = getKnTU(val_so, getRadioValue('tu_un_thu3'));
-    var phas = [
-        { name: "Pha A", s1: 'tu_ua_s1', s2: 'tu_ua_s2', c1_1: 'tu_u2a1_1', c1_2: 'tu_u2a1_2', c2_1: 'tu_u2a2_1', c2_2: 'tu_u2a2_2', c3_1: 'tu_u2a3_1', c3_2: 'tu_u2a3_2' },
-        { name: "Pha B", s1: 'tu_ub_s1', s2: 'tu_ub_s2', c1_1: 'tu_u2b1_1', c1_2: 'tu_u2b1_2', c2_1: 'tu_u2b2_1', c2_2: 'tu_u2b2_2', c3_1: 'tu_u2b3_1', c3_2: 'tu_u2b3_2' },
-        { name: "Pha C", s1: 'tu_uc_s1', s2: 'tu_uc_s2', c1_1: 'tu_u2c1_1', c1_2: 'tu_u2c1_2', c2_1: 'tu_u2c2_1', c2_2: 'tu_u2c2_2', c3_1: 'tu_u2c3_1', c3_2: 'tu_u2c3_2' }
-    ];
-    var tbodyHtml = ""; var detailLog = ""; var hasData = false; var hasAlert = false;
-    var alertMsg = "⚠️ <b>CẢNH BÁO SAI SỐ TU OVER-LIMIT (>0.5%):</b> ";
-    var rawDataTSB = { type: 'TU', maxError: 0 };
-
-    for (var i = 0; i < phas.length; i++) {
-        var p = phas[i]; var us1 = parseFloat(document.getElementById(p.s1).value) || 10; var us2 = parseFloat(document.getElementById(p.s2).value) || 10;
-        var cuons = [ { name: "Cuộn 1", Kn: kn1, v1: parseFloat(document.getElementById(p.c1_1).value), v2: parseFloat(document.getElementById(p.c1_2).value) }, { name: "Cuộn 2", Kn: kn2, v1: parseFloat(document.getElementById(p.c2_1).value), v2: parseFloat(document.getElementById(p.c2_2).value) }, { name: "Cuộn 3", Kn: kn3, v1: parseFloat(document.getElementById(p.c3_1).value), v2: parseFloat(document.getElementById(p.c3_2).value) } ];
-
-        for (var j = 0; j < cuons.length; j++) {
-            var c = cuons[j];
-            if (c.Kn !== null && (!isNaN(c.v1) || !isNaN(c.v2))) {
-                hasData = true; var count = 0; var sum_u1 = 0, sum_u2 = 0;
-                if (!isNaN(c.v1)) { sum_u1 += us1; sum_u2 += c.v1; count++; }
-                if (!isNaN(c.v2)) { sum_u1 += us2; sum_u2 += c.v2; count++; }
-                var Ktt = ((sum_u1 / count) * 1000) / (sum_u2 / count);
-                var saiso = ((Ktt - c.Kn) / c.Kn) * 100;
-                if(Math.abs(saiso) > Math.abs(rawDataTSB.maxError)) rawDataTSB.maxError = saiso;
-                var isHighError = Math.abs(saiso) > 0.5;
-                if (isHighError) { hasAlert = true; alertMsg += p.name + " " + c.name + " lệch " + saiso.toFixed(3) + "%; "; }
-
-                tbodyHtml += "<tr><td><b>" + p.name + "</b></td><td>" + c.name + "</td><td>" + c.Kn.toFixed(3) + "</td><td><b>" + Ktt.toFixed(3) + "</b></td><td><span class='" + (isHighError?"error-badge":"pass-badge") + "'>" + (saiso>0?"+":"") + saiso.toFixed(3) + "%</span></td></tr>";
-                detailLog += p.name + "-" + c.name + ": K=" + Ktt.toFixed(3) + " (Sai số: " + saiso.toFixed(3) + "%)<br>";
-            }
-        }
-    }
-    if (!hasData) { alert("Nhập dữ liệu TU!"); return; }
-
-    var historyDrift = checkHistoryDrift('tu', tag, rawDataTSB, 'TSB');
-    var alertDiv = document.getElementById('tu_alert_box');
-    alertDiv.style.display = (hasAlert || historyDrift !== "") ? 'block' : 'none';
-    alertDiv.innerHTML = (hasAlert ? alertMsg : "") + historyDrift;
-
-    document.getElementById('tu_result_table_body').innerHTML = tbodyHtml; document.getElementById('tu_result_tiso').style.display = 'block';
-    luuVaoLocalStorage('tu', { time: layThoiGian(), type: "Tỉ Số Biến TU", tag: tag, detail: detailLog, tableHtml: document.getElementById('tu_result_table_body').parentNode.outerHTML, rawData: rawDataTSB });
-}
-
-function tinhR1CTU() {
-    var tag = document.getElementById('tu_name_global').value.trim() || "TU Chưa Rõ Tên";
-    var T_const = parseFloat(getRadioValue('tu_material'));
-    var phasR = [ { name: "Pha A", tempId: 'tu_temp_a', r1: 'tu_ra_1', r2: 'tu_ra_2', r3: 'tu_ra_3' }, { name: "Pha B", tempId: 'tu_temp_b', r1: 'tu_rb_1', r2: 'tu_rb_2', r3: 'tu_rb_3' }, { name: "Pha C", tempId: 'tu_temp_c', r1: 'tu_rc_1', r2: 'tu_rc_2', r3: 'tu_rc_3' } ];
-    var tbodyHtml = ""; var detailLog = ""; var hasData = false;
-    var r_cuon1 = [], r_cuon2 = [], r_cuon3 = []; var rawDataR1C = { type: 'TU', maxLech: 0 };
-
-    for (var i = 0; i < phasR.length; i++) {
-        var p = phasR[i]; var t_pha = parseFloat(document.getElementById(p.tempId).value);
-        var v1 = parseFloat(document.getElementById(p.r1).value), v2 = parseFloat(document.getElementById(p.r2).value), v3 = parseFloat(document.getElementById(p.r3).value);
-        if (!isNaN(v1) || !isNaN(v2) || !isNaN(v3)) {
-            hasData = true; var k_pha = (75 + T_const) / (t_pha + T_const);
-            var r1_75 = !isNaN(v1) ? v1 * k_pha : NaN; if(!isNaN(r1_75)) r_cuon1.push(r1_75);
-            var r2_75 = !isNaN(v2) ? v2 * k_pha : NaN; if(!isNaN(r2_75)) r_cuon2.push(r2_75);
-            var r3_75 = !isNaN(v3) ? v3 * k_pha : NaN; if(!isNaN(r3_75)) r_cuon3.push(r3_75);
-
-            tbodyHtml += "<tr><td><b>" + p.name + "</b></td><td>" + t_pha + "</td><td>" + k_pha.toFixed(4) + "</td><td><b>" + (!isNaN(r1_75)?r1_75.toFixed(3):"-") + "</b></td><td><b>" + (!isNaN(r2_75)?r2_75.toFixed(3):"-") + "</b></td><td><b>" + (!isNaN(r3_75)?r3_75.toFixed(3):"-") + "</b></td></tr>";
-            detailLog += p.name + " (" + t_pha + "°C): R1=" + (!isNaN(r1_75)?r1_75.toFixed(3):"-") + " mΩ | R2=" + (!isNaN(r2_75)?r2_75.toFixed(3):"-") + " mΩ | R3=" + (!isNaN(r3_75)?r3_75.toFixed(3):"-") + " mΩ<br>";
-        }
-    }
-    if (!hasData) { alert("Nhập R1C TU!"); return; }
-
-    var hasAlertR1C = false; var alertR1CMsg = "⚠️ <b>CẢNH BÁO ĐỘ LỆCH PHA TU (>10%):</b> ";
-    var checkLech = function(arr, name) {
-        if(arr.length >= 2) {
-            var lech = ((Math.max.apply(null, arr) - Math.min.apply(null, arr)) / Math.min.apply(null, arr)) * 100;
-            if(lech > rawDataR1C.maxLech) rawDataR1C.maxLech = lech;
-            if (lech > 10.0) { hasAlertR1C = true; alertR1CMsg += name + " lệch " + lech.toFixed(1) + "% giữa các pha; "; }
-        }
-    };
-    checkLech(r_cuon1, "Cuộn 1"); checkLech(r_cuon2, "Cuộn 2"); checkLech(r_cuon3, "Cuộn 3");
-
-    var historyDrift = checkHistoryDrift('tu', tag, rawDataR1C, 'R1C');
-    var alertDiv = document.getElementById('tu_alert_box_r1c');
-    alertDiv.style.display = (hasAlertR1C || historyDrift !== "") ? 'block' : 'none';
-    alertDiv.innerHTML = (hasAlertR1C ? alertR1CMsg : "") + historyDrift;
-
-    document.getElementById('tu_result_r1c_table_body').innerHTML = tbodyHtml; document.getElementById('tu_result_r1c').style.display = 'block';
-    luuVaoLocalStorage('tu', { time: layThoiGian(), type: "Quy Đổi R1C TU", tag: tag, detail: detailLog, tableHtml: document.getElementById('tu_result_r1c_table_body').parentNode.outerHTML, rawData: rawDataR1C });
-}
-
-var myChart = null;
-function showTrendChart(type) {
-    var tag = document.getElementById(type + '_name_global').value.trim();
-    if(!tag) { alert("Sếp vui lòng nhập Tên/Vị trí trạm!"); return; }
-    var key = type === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
-    var history = JSON.parse(localStorage.getItem(key) || '[]');
-    var stationData = history.filter(r => r.tag.replace(/\s/g,'').toUpperCase() === tag.replace(/\s/g,'').toUpperCase() && r.rawR1C != null).reverse(); 
-    if (stationData.length < 2) { alert("Cần ít nhất 2 lần đo có dữ liệu R1C để vẽ biểu đồ CBM!"); return; }
-
-    var labels = []; var r1cData = [];
-    stationData.forEach(r => {
-        labels.push(r.time.split(" ")[0]);
-        r1cData.push(r.rawR1C.maxLech);
-    });
-
-    document.getElementById('chartTitle').innerText = "CBM XU HƯỚNG BIẾN ĐỘNG R1C: " + tag.toUpperCase();
-    document.getElementById('chartModal').style.display = 'flex';
-    var ctx = document.getElementById('trendChart').getContext('2d');
-    if (myChart) myChart.destroy();
-    myChart = new Chart(ctx, {
-        type: 'line', data: { labels: labels, datasets: [{ label: 'Max Lệch Pha R1C (%)', data: r1cData, borderColor: '#e32219', backgroundColor: '#e32219', borderWidth: 2, tension: 0.2 }] },
-        options: { responsive: true }
-    });
-}
-
-function hienThiNhatKy(type) {
-    var key = type === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
-    var history = JSON.parse(localStorage.getItem(key) || '[]');
-    var listDiv = document.getElementById(type + '_history_list');
-    if (history.length === 0) { listDiv.innerHTML = "<div style='color:#a0aec0; text-align:center; padding: 10px;'>Chưa có lịch sử.</div>"; return; }
-    var html = "";
-    for (var i = 0; i < history.length; i++) {
-        var item = history[i];
-        var syncStatus = item.synced ? '<span class="sync-badge">Đã đồng bộ ☁️</span>' : '<span class="sync-badge" style="background:#fed7d7; color:#c53030;">Chưa đồng bộ</span>';
-        html += '<div class="history-item">' + syncStatus + '<div class="history-time">' + item.time + ' - [' + item.tag + '] - ' + item.type + '</div><div class="history-detail">' + (item.tsbDetail || "") + (item.r1cDetail || "") + '</div></div>';
-    }
-    listDiv.innerHTML = html;
-}
-
-// 1. ĐỒNG BỘ LÊN CLOUD
-function dongBoCloudUp(typeStr) {
-    if (!CLOUD_URL) { alert("Chưa cấu hình link Cloud!"); return; }
-    var type = typeStr.toLowerCase();
-    var key = type === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
-    var history = JSON.parse(localStorage.getItem(key) || '[]');
-    var unsynced = history.filter(r => r.synced !== true);
-    if (unsynced.length === 0) { alert("Dữ liệu " + typeStr + " đã đồng bộ lên Cloud rồi!"); return; }
-
-    var payload = { action: "upload", type: typeStr, records: unsynced };
-    var btn = event.target; var originalText = btn.innerText;
-    btn.innerText = "⏳ ĐANG GỬI LÊN..."; btn.disabled = true;
-
-    fetch(CLOUD_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === "success") {
-            history.forEach(r => { if(r.synced !== true) r.synced = true; });
-            localStorage.setItem(key, JSON.stringify(history));
-            alert("Đã đẩy thành công " + unsynced.length + " bản ghi lên Google Sheets!");
-            hienThiNhatKy(type);
-        } else { alert("Lỗi: " + data.message); }
-    })
-    .catch(err => alert("Lỗi mạng: " + err))
-    .finally(() => { btn.innerText = originalText; btn.disabled = false; });
-}
-
-// 2. TẢI DỮ LIỆU XUỐNG TỪ CLOUD
-function dongBoCloudDown(typeStr) {
-    if (!CLOUD_URL) { alert("Chưa cấu hình link Cloud!"); return; }
-    var payload = { action: "download" };
-    var btn = event.target; var originalText = btn.innerText;
-    btn.innerText = "📥 ĐANG TẢI XUỐNG..."; btn.disabled = true;
-
-    fetch(CLOUD_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data && data.status === "success" && data.data) {
-            var cloudRows = (typeStr.toUpperCase() === 'TI') ? data.data.ti : data.data.tu;
-            if (!cloudRows || !Array.isArray(cloudRows) || cloudRows.length === 0) { 
-                alert("Google Sheets chưa có dữ liệu " + typeStr + " nào hoặc định dạng trống!"); 
-                return; 
-            }
-
-            var key = typeStr.toLowerCase() === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
-            var localHistory = JSON.parse(localStorage.getItem(key) || '[]');
-            var count = 0;
-
-            cloudRows.forEach(row => {
-                if (!row || row.length < 3) return;
-                var timeVal = row[0] || "", tagVal = row[1] || "Không rõ", typeVal = row[2] || "", tsbD = row[3] || "", r1cD = row[4] || "", maxT = row[5], maxR = row[6];
-                var exists = localHistory.some(h => h.time === timeVal && h.tag.toUpperCase() === tagVal.toUpperCase());
-                if (!exists) {
-                    localHistory.push({
-                        time: timeVal, tag: tagVal, type: typeVal, synced: true,
-                        tsbHtml: "", r1cHtml: "", tsbDetail: tsbD, r1cDetail: r1cD,
-                        rawTSB: (maxT !== "" && maxT !== undefined && !isNaN(maxT)) ? { maxError: parseFloat(maxT) } : null,
-                        rawR1C: (maxR !== "" && maxR !== undefined && !isNaN(maxR)) ? { maxLech: parseFloat(maxR) } : null
-                    });
-                    count++;
-                }
-            });
-
-            localStorage.setItem(key, JSON.stringify(localHistory));
-            hienThiNhatKy(typeStr.toLowerCase());
-            alert("Tải xuống thành công! Đã nạp thêm " + count + " bản ghi từ Google Sheets.");
-        } else { 
-            alert("Lỗi tải xuống từ Server: " + (data ? data.message : "Phản hồi không hợp lệ")); 
-        }
-    })
-    .catch(err => alert("Lỗi kết nối mạng: " + err))
-    .finally(() => { btn.innerText = originalText; btn.disabled = false; });
-}
-
-function xuatExcelCSV(type) {
-    var key = type === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
-    var history = JSON.parse(localStorage.getItem(key) || '[]');
-    if (history.length === 0) { alert("Không có dữ liệu!"); return; }
-    var html = "<html><head><meta charset='utf-8'></head><body><h2>BÁO CÁO CBM THÍ NGHIỆM " + type.toUpperCase() + " - PTC3</h2>";
-    history.forEach(item => { html += "<h3>Trạm/Thiết bị: " + item.tag + " - Lần đo: " + item.time + "</h3>" + (item.tsbDetail || "") + "<br>" + (item.r1cDetail || "") + "<hr>"; });
-    html += "</body></html>";
-    var blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
-    var url = URL.createObjectURL(blob); var a = document.createElement('a'); a.href = url;
-    a.download = "Baocao_CBM_" + type.toUpperCase() + "_" + new Date().toISOString().slice(0,10) + ".xls";
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-}
-
-function nhapDulieutuJSON(event, type) {
-    var file = event.target.files[0]; if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            var data = JSON.parse(e.target.result);
-            localStorage.setItem(type === 'ti' ? 'evn_ti_history' : 'evn_tu_history', JSON.stringify(data));
-            hienThiNhatKy(type); alert("Nạp JSON thành công!");
-        } catch(err) { alert("File lỗi!"); }
-    };
-    reader.readAsText(file);
-}
-
-function saulapBackupJSON(type) {
-    var key = type === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
-    var history = localStorage.getItem(key);
-    if (!history) { alert("Trống!"); return; }
-    var a = document.createElement('a'); a.href = "data:text/json;charset=utf-8," + encodeURIComponent(history);
-    a.download = "Backup_" + type.toUpperCase() + ".json";
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-}
-
-function xoaNhatKy(type) {
-    if (confirm("Xóa toàn bộ lịch sử?")) { localStorage.removeItem(type === 'ti' ? 'evn_ti_history' : 'evn_tu_history'); hienThiNhatKy(type); }
-}
-</script>
-
-</body>
-</html>
+Sếp có muốn thả luôn đoạn code của tab RDC (hoặc file chứa logic của tab TSB) lên đây để em trực tiếp "múa phím" ráp code xử lý nhanh gọn cho Sếp luôn không ạ?
