@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thí Nghiệm TU & TI - PTC3 EVNNPT</title>
+    <style>
+        /* Tông màu chuyên nghiệp EVNNPT: Xanh dương đậm (#0a3b82), Đỏ (#e32219), Nền xám nhạt (#f4f7fa) */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f7fa; margin: 0; padding: 12px; padding-bottom: 50px; color: #2d3748; }
+        .card { background: white; border-radius: 12px; padding: 15px; box-shadow: 0 8px 24px rgba(10, 59, 130, 0.08); max-width: 650px; margin: 0 auto; position: relative; border-top: 4px solid #0a3b82; }
+        
+        .brand-header { text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px; }
+        .brand-logo { max-height: 80px; object-fit: contain; margin-bottom: 8px; }
+        .app-title { font-size: 16px; font-weight: 800; color: #0a3b82; margin: 4px 0 0 0; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        /* Master Tabs (Chon TU / TI) */
+        .master-tab-group { display: flex; gap: 8px; margin-bottom: 15px; }
+        .master-tab-btn { flex: 1; padding: 12px 4px; background: #fff; border: 2px solid #cbd5e0; border-radius: 8px; font-weight: 800; font-size: 14px; color: #4a5568; cursor: pointer; text-align: center; transition: all 0.2s ease; text-transform: uppercase;}
+        .master-tab-btn.active { background: #e32219; border-color: #e32219; color: white; box-shadow: 0 4px 10px rgba(227, 34, 25, 0.25); }
+
+        /* Sub Tabs (Ti so bien / R1C / Nhat ky) */
+        .tab-group { display: flex; gap: 4px; margin-bottom: 15px; background: #edf2f7; padding: 4px; border-radius: 8px; }
+        .tab-btn { flex: 1; padding: 10px 2px; background: transparent; border: none; border-radius: 6px; font-weight: bold; font-size: 12px; color: #4a5568; cursor: pointer; text-align: center; transition: all 0.2s ease; }
+        .tab-btn.active { background: #0a3b82; color: white; box-shadow: 0 2px 8px rgba(10, 59, 130, 0.3); }
+
+        .master-content { display: none; animation: fadeIn 0.3s; }
+        .master-content.active { display: block; }
+
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-weight: 700; margin-bottom: 6px; color: #1a365d; font-size: 13px; }
+        select, input[type="text"], input[type="number"] { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 14px; background-color: #f8fafc; transition: border-color 0.2s; }
+        select:focus, input:focus { outline: none; border-color: #0a3b82; background-color: #fff; box-shadow: 0 0 0 3px rgba(10, 59, 130, 0.1); }
+
+        .radio-tile-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+        .radio-tile { position: relative; flex-grow: 1; }
+        .radio-tile input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+        .radio-tile label { display: block; text-align: center; padding: 8px 6px; background: #edf2f7; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 12px; font-weight: 600; color: #4a5568; cursor: pointer; user-select: none; transition: all 0.2s; }
+        .radio-tile input[type="radio"]:checked + label { background: #0a3b82; color: white; border-color: #0a3b82; box-shadow: 0 2px 6px rgba(10, 59, 130, 0.2); }
+
+        .btn-calc { width: 100%; padding: 14px; background: linear-gradient(135deg, #0a3b82 0%, #0d4ba6 100%); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; margin-top: 15px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 12px rgba(10, 59, 130, 0.25); transition: all 0.2s; }
+        .btn-calc:active { transform: translateY(2px); box-shadow: 0 2px 6px rgba(10, 59, 130, 0.2); }
+        
+        .result-box { margin-top: 20px; padding: 12px; background: #f0f7ff; border-left: 5px solid #0a3b82; border-radius: 8px; display: none; box-shadow: 0 2px 10px rgba(0,0,0,0.03); overflow-x: auto; }
+        
+        .pha-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .pha-title { font-weight: 800; color: #0a3b82; margin-bottom: 10px; font-size: 14px; border-bottom: 2px solid #edf2f7; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .sec-title { font-weight: 700; font-size: 12px; color: #2d3748; display: flex; align-items: center; gap: 4px; margin-bottom:8px;}
+        .sec-title::before { content: ""; display: inline-block; width: 6px; height: 6px; background: #e32219; border-radius: 50%; }
+
+        .grid-2col-input { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .grid-3col-input { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .coil-item { background: #f8fafc; border: 1px solid #cbd5e0; border-radius: 6px; padding: 8px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .coil-item label { margin: 0; color: #0a3b82; font-size: 11px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
+        .coil-item input { padding: 6px; font-size: 13px; text-align: center; font-weight: bold;}
+
+        .ratio-item { background: #fff; border: 1px solid #cbd5e0; border-radius: 6px; padding: 6px; display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+        .ratio-item label { font-size: 12px; margin: 0; color: #1a365d; }
+        .ratio-item input { width: 45%; padding: 4px; font-size: 13px; text-align: center; }
+
+        .extra-coils-toggle { margin: 15px 0; padding: 10px; background: #fff5f5; border: 1px dashed #fc8181; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; color: #c53030; font-weight: 700; font-size: 12px; transition: all 0.2s; }
+        .extra-coils-toggle:hover { background: #fed7d7; }
+        .extra-coils-toggle input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
+
+        .table-result { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; background: #fff; border-radius: 6px; }
+        .table-result th, .table-result td { border: 1px solid #cbd5e0; padding: 6px 4px; text-align: center; }
+        .table-result th { background: #0a3b82; color: white; font-weight: 600; }
+        .table-result tr:nth-child(even) { background-color: #f8fafc; }
+        .table-result td b { color: #0a3b82; font-size: 12px; }
+
+        .alert-banner { background: #fff5f5; border: 1px solid #fc8181; border-left: 5px solid #e32219; color: #c53030; padding: 10px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-bottom: 12px; display: none; box-shadow: 0 2px 8px rgba(227, 34, 25, 0.1); }
+        .error-badge { background: #fed7d7; color: #c53030; padding: 2px 4px; border-radius: 4px; font-weight: 800; display: inline-block; font-size: 10px;}
+        .pass-badge { color: #2f855a; font-weight: bold; font-size: 10px;}
+
+        .history-card { margin-top: 15px; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; background: #ffffff; max-height: 400px; overflow-y: auto; }
+        .history-item { border-bottom: 1px solid #edf2f7; padding: 10px 0; font-size: 12px; }
+        .history-item:last-child { border-bottom: none; }
+        .history-time { font-size: 11px; color: #e32219; font-weight: bold; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
+        .history-detail { color: #2d3748; line-height: 1.5; background: #f8fafc; padding: 8px; border-radius: 6px; border-left: 3px solid #cbd5e0; }
+        
+        .btn-sync-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-excel { flex: 1; background: #2f855a; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; text-align: center; box-shadow: 0 2px 6px rgba(47, 133, 90, 0.2); }
+        .btn-backup { flex: 1; background: #d69e2e; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; text-align: center; box-shadow: 0 2px 6px rgba(214, 158, 46, 0.2); }
+        .btn-danger { background: #e53e3e; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; width: 100%; margin-top: 15px; text-transform: uppercase; }
+
+        .watermark-footer { position: fixed; bottom: 12px; right: 16px; font-size: 11px; font-weight: 800; color: rgba(10, 59, 130, 0.5); background: rgba(255, 255, 255, 0.9); padding: 6px 10px; border-radius: 20px; border: 1px solid rgba(10, 59, 130, 0.15); pointer-events: none; z-index: 9999; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 5px; backdrop-filter: blur(4px); }
+        
+        hr { border: 0.5px solid #cbd5e0; margin: 18px 0; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="brand-header">
+        <img src="image_da12fe.png" alt="EVNNPT PTC3 Logo" class="brand-logo" onerror="this.style.display='none'">
+        <div class="app-title">APP THÍ NGHIỆM ĐO LƯỜNG (TU & TI)</div>
+    </div>
+    
+    <!-- MASTER TABS: CHON THIET BI -->
+    <div class="master-tab-group">
+        <button type="button" class="master-tab-btn active" id="btn-master-ti" onclick="switchMasterTab('ti')">🔌 MÁY BIẾN DÒNG (TI)</button>
+        <button type="button" class="master-tab-btn" id="btn-master-tu" onclick="switchMasterTab('tu')">⚡ MÁY BIẾN ÁP (TU)</button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PHẦN 1: MÁY BIẾN DÒNG (TI)                 -->
+    <!-- ========================================== -->
+    <div id="master-ti" class="master-content active">
+        <div class="tab-group">
+            <button type="button" class="tab-btn ti-tab-btn active" onclick="switchSubTab('ti', 'ti_tab1')">1. Tỉ Số Biến (TSB)</button>
+            <button type="button" class="tab-btn ti-tab-btn" onclick="switchSubTab('ti', 'ti_tab2')">2. Quy Đổi R1C</button>
+            <button type="button" class="tab-btn ti-tab-btn" onclick="switchSubTab('ti', 'ti_tab3')">3. Nhật Ký TI</button>
+        </div>
+
+        <!-- TI - TAB 1: TÍNH TỈ SỐ BIẾN -->
+        <div id="ti_tab1" class="tab-content ti-tab-content active">
+            <div class="form-group">
+                <label>🏷️ Tên / Vị trí TI (Ghi chú):</label>
+                <input type="text" id="ti_name_tiso" placeholder="VD: TI 431 - Trạm 220kV Bảo Lộc">
+            </div>
+
+            <div style="background: #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                <div style="font-weight:bold; color:#0a3b82; margin-bottom:8px; font-size:13px;">⚙️ TỈ SỐ BIẾN ĐỊNH MỨC TỪNG CUỘN (A/A):</div>
+                <div class="grid-2col-input">
+                    <div class="ratio-item"><label>Cuộn 1:</label><input type="number" id="ti_ip_n_1" value="2000"> / <input type="number" id="ti_is_n_1" value="1"></div>
+                    <div class="ratio-item"><label>Cuộn 2:</label><input type="number" id="ti_ip_n_2" value="2000"> / <input type="number" id="ti_is_n_2" value="1"></div>
+                    <div class="ratio-item"><label>Cuộn 3:</label><input type="number" id="ti_ip_n_3" value="2000"> / <input type="number" id="ti_is_n_3" value="1"></div>
+                    <div class="ratio-item"><label>Cuộn 4:</label><input type="number" id="ti_ip_n_4" value="2000"> / <input type="number" id="ti_is_n_4" value="1"></div>
+                    <div class="ratio-item"><label>Cuộn 5:</label><input type="number" id="ti_ip_n_5" value="2000"> / <input type="number" id="ti_is_n_5" value="1"></div>
+                </div>
+                <div class="grid-2col-input ti-extra-coils" style="display:none; margin-top:8px;">
+                    <div class="ratio-item"><label>Cuộn 6:</label><input type="number" id="ti_ip_n_6" value="2000"> / <input type="number" id="ti_is_n_6" value="1"></div>
+                    <div class="ratio-item"><label>Cuộn 7:</label><input type="number" id="ti_ip_n_7" value="2000"> / <input type="number" id="ti_is_n_7" value="1"></div>
+                    <div class="ratio-item"><label>Cuộn 8:</label><input type="number" id="ti_ip_n_8" value="2000"> / <input type="number" id="ti_is_n_8" value="1"></div>
+                </div>
+            </div>
+
+            <label class="extra-coils-toggle">
+                <input type="checkbox" id="ti_show_extra_tsb" onchange="toggleExtraCoilsTI('ti_show_extra_tsb')">
+                TICK HIỂN THỊ THÊM CUỘN 6, 7, 8
+            </label>
+
+            <hr>
+            <div style="font-size: 14px; font-weight: 800; color: #0a3b82; margin-bottom: 12px; text-align: center;">📊 NHẬP DÒNG THỨ CẤP (Is) ĐO ĐƯỢC 3 PHA:</div>
+
+            <div id="ti_phas_container_tsb">
+                <!-- PHA A TSB -->
+                <div class="pha-card">
+                    <div class="pha-title"><span>🔴 PHA A</span></div>
+                    <div class="grid-3col-input">
+                        <div class="coil-item"><label>Cuộn 1</label><input type="number" id="ti_is_a_1" placeholder="Is (A)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 2</label><input type="number" id="ti_is_a_2" placeholder="Is (A)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 3</label><input type="number" id="ti_is_a_3" placeholder="Is (A)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 4</label><input type="number" id="ti_is_a_4" placeholder="Is (A)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 5</label><input type="number" id="ti_is_a_5" placeholder="Is (A)" step="any"></div>
+                    </div>
+                    <div class="grid-3col-input ti-extra-coils" style="display:none; margin-top:8px;">
+                        <div class="coil-item"><label>Cuộn 6</label><input type="number" id="ti_is_a_6" placeholder="Is (A)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 7</label><input type="number" id="ti_is_a_7" placeholder="Is (A)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 8</label><input type="number" id="ti_is_a_8" placeholder="Is (A)" step="any"></div>
+                    </div>
+                </div>
+
+                <!-- PHA B TSB -->
+                <div class="pha-card">
+                    <div class="pha-title"><span>🟡 PHA B</span></div>
+                    <div class="grid-3col-input">
+                        <div class="coil-item"><label>Cuộn 1</label><input type="number" id="ti_is_b_1" placeholder="Is (A)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 2</label><input type="number" id="ti_is_b_2" placeholder="Is (A)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 3</label><input type="number" id="ti_is_b_3" placeholder="Is (A)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 4</label><input type="number" id="ti_is_b_4" placeholder="Is (A)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 5</label><input type="number" id="ti_is_b_5" placeholder="Is (A)" step="any"></div>
+                    </div>
+                    <div class="grid-3col-input ti-extra-coils" style="display:none; margin-top:8px;">
+                        <div class="coil-item"><label>Cuộn 6</label><input type="number" id="ti_is_b_6" placeholder="Is (A)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 7</label><input type="number" id="ti_is_b_7" placeholder="Is (A)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 8</label><input type="number" id="ti_is_b_8" placeholder="Is (A)" step="any"></div>
+                    </div>
+                </div>
+
+                <!-- PHA C TSB -->
+                <div class="pha-card">
+                    <div class="pha-title"><span>🔵 PHA C</span></div>
+                    <div class="grid-3col-input">
+                        <div class="coil-item"><label>Cuộn 1</label><input type="number" id="ti_is_c_1" placeholder="Is (A)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 2</label><input type="number" id="ti_is_c_2" placeholder="Is (A)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 3</label><input type="number" id="ti_is_c_3" placeholder="Is (A)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 4</label><input type="number" id="ti_is_c_4" placeholder="Is (A)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 5</label><input type="number" id="ti_is_c_5" placeholder="Is (A)" step="any"></div>
+                    </div>
+                    <div class="grid-3col-input ti-extra-coils" style="display:none; margin-top:8px;">
+                        <div class="coil-item"><label>Cuộn 6</label><input type="number" id="ti_is_c_6" placeholder="Is (A)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 7</label><input type="number" id="ti_is_c_7" placeholder="Is (A)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 8</label><input type="number" id="ti_is_c_8" placeholder="Is (A)" step="any"></div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-calc" onclick="tinhTisoTI()">TÍNH TỈ SỐ & LƯU NHẬT KÝ TI</button>
+
+            <div id="ti_result_tiso" class="result-box">
+                <div id="ti_alert_box" class="alert-banner">
+                    CẢNH BÁO: PHÁT HIỆN LỖI SAI SỐ > 0.5% KHI ĐO TỈ SỐ BIẾN TI! CẦN KIỂM TRA LẠI MẠCH ĐO HOẶC TIẾP XÚC.
+                </div>
+
+                <div style="font-weight: 800; color: #0a3b82; margin-bottom: 10px; text-transform: uppercase; font-size: 13px;">KẾT QUẢ TỈ SỐ BIẾN TI (A/A):</div>
+                <table class="table-result">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">Cuộn</th>
+                            <th colspan="2" style="background:#e53e3e;">Pha A</th>
+                            <th colspan="2" style="background:#d69e2e;">Pha B</th>
+                            <th colspan="2" style="background:#3182ce;">Pha C</th>
+                        </tr>
+                        <tr>
+                            <th style="font-size:10px;">TS đo</th><th style="font-size:10px;">Sai số</th>
+                            <th style="font-size:10px;">TS đo</th><th style="font-size:10px;">Sai số</th>
+                            <th style="font-size:10px;">TS đo</th><th style="font-size:10px;">Sai số</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ti_result_table_body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TI - TAB 2: QUY ĐỔI ĐIỆN TRỞ 1 CHIỀU R1C -->
+        <div id="ti_tab2" class="tab-content ti-tab-content">
+            <div class="form-group">
+                <label>🏷️ Tên / Vị trí TI (Ghi chú):</label>
+                <input type="text" id="ti_name_r1c" placeholder="VD: TI 431 - Trạm 220kV Bảo Lộc">
+            </div>
+
+            <div class="form-group" style="background: #e2e8f0; padding: 12px; border-radius: 8px;">
+                <label>📐 Vật liệu cuộn dây (Hằng số T):</label>
+                <div class="radio-tile-group">
+                    <div class="radio-tile"><input type="radio" name="material_ti" id="mat_cu_ti" value="234.5" checked onchange="toggleCustomT_TI()"><label for="mat_cu_ti">Đồng (Cu - 234.5)</label></div>
+                    <div class="radio-tile"><input type="radio" name="material_ti" id="mat_al_ti" value="225" onchange="toggleCustomT_TI()"><label for="mat_al_ti">Nhôm (Al - 225)</label></div>
+                    <div class="radio-tile"><input type="radio" name="material_ti" id="mat_custom_ti" value="custom" onchange="toggleCustomT_TI()"><label for="mat_custom_ti">Khác...</label></div>
+                </div>
+                <input type="number" id="custom_t_val_ti" placeholder="Nhập hằng số T..." style="display: none; margin-top: 8px;" step="any">
+            </div>
+
+            <label class="extra-coils-toggle">
+                <input type="checkbox" id="ti_show_extra_r1c" onchange="toggleExtraCoilsTI('ti_show_extra_r1c')">
+                TICK HIỂN THỊ THÊM CUỘN 6, 7, 8
+            </label>
+
+            <hr>
+            <div style="font-size: 14px; font-weight: 800; color: #0a3b82; margin-bottom: 12px; text-align: center;">📊 NHẬP NHIỆT ĐỘ (°C) & ĐIỆN TRỞ R1C (Ω):</div>
+
+            <div id="ti_phas_container_r1c">
+                <!-- PHA A R1C -->
+                <div class="pha-card">
+                    <div class="pha-title">
+                        <span>🔴 PHA A</span>
+                        <span style="font-size:12px; font-weight:normal; color:#4a5568; display:flex; align-items:center; gap:4px;">
+                            🌡️ T (°C): <input type="number" id="ti_temp_a_r1c" value="30" step="any" style="width:60px; padding:4px; font-size:13px; font-weight:bold; border:1px solid #cbd5e0; border-radius:4px;">
+                        </span>
+                    </div>
+                    <div class="grid-3col-input">
+                        <div class="coil-item"><label>Cuộn 1</label><input type="number" id="ti_r_a_1" placeholder="R (Ω)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 2</label><input type="number" id="ti_r_a_2" placeholder="R (Ω)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 3</label><input type="number" id="ti_r_a_3" placeholder="R (Ω)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 4</label><input type="number" id="ti_r_a_4" placeholder="R (Ω)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 5</label><input type="number" id="ti_r_a_5" placeholder="R (Ω)" step="any"></div>
+                    </div>
+                    <div class="grid-3col-input ti-extra-coils" style="display:none; margin-top:8px;">
+                        <div class="coil-item"><label>Cuộn 6</label><input type="number" id="ti_r_a_6" placeholder="R (Ω)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 7</label><input type="number" id="ti_r_a_7" placeholder="R (Ω)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 8</label><input type="number" id="ti_r_a_8" placeholder="R (Ω)" step="any"></div>
+                    </div>
+                </div>
+
+                <!-- PHA B R1C -->
+                <div class="pha-card">
+                    <div class="pha-title">
+                        <span>🟡 PHA B</span>
+                        <span style="font-size:12px; font-weight:normal; color:#4a5568; display:flex; align-items:center; gap:4px;">
+                            🌡️ T (°C): <input type="number" id="ti_temp_b_r1c" value="30" step="any" style="width:60px; padding:4px; font-size:13px; font-weight:bold; border:1px solid #cbd5e0; border-radius:4px;">
+                        </span>
+                    </div>
+                    <div class="grid-3col-input">
+                        <div class="coil-item"><label>Cuộn 1</label><input type="number" id="ti_r_b_1" placeholder="R (Ω)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 2</label><input type="number" id="ti_r_b_2" placeholder="R (Ω)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 3</label><input type="number" id="ti_r_b_3" placeholder="R (Ω)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 4</label><input type="number" id="ti_r_b_4" placeholder="R (Ω)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 5</label><input type="number" id="ti_r_b_5" placeholder="R (Ω)" step="any"></div>
+                    </div>
+                    <div class="grid-3col-input ti-extra-coils" style="display:none; margin-top:8px;">
+                        <div class="coil-item"><label>Cuộn 6</label><input type="number" id="ti_r_b_6" placeholder="R (Ω)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 7</label><input type="number" id="ti_r_b_7" placeholder="R (Ω)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 8</label><input type="number" id="ti_r_b_8" placeholder="R (Ω)" step="any"></div>
+                    </div>
+                </div>
+
+                <!-- PHA C R1C -->
+                <div class="pha-card">
+                    <div class="pha-title">
+                        <span>🔵 PHA C</span>
+                        <span style="font-size:12px; font-weight:normal; color:#4a5568; display:flex; align-items:center; gap:4px;">
+                            🌡️ T (°C): <input type="number" id="ti_temp_c_r1c" value="30" step="any" style="width:60px; padding:4px; font-size:13px; font-weight:bold; border:1px solid #cbd5e0; border-radius:4px;">
+                        </span>
+                    </div>
+                    <div class="grid-3col-input">
+                        <div class="coil-item"><label>Cuộn 1</label><input type="number" id="ti_r_c_1" placeholder="R (Ω)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 2</label><input type="number" id="ti_r_c_2" placeholder="R (Ω)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 3</label><input type="number" id="ti_r_c_3" placeholder="R (Ω)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 4</label><input type="number" id="ti_r_c_4" placeholder="R (Ω)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 5</label><input type="number" id="ti_r_c_5" placeholder="R (Ω)" step="any"></div>
+                    </div>
+                    <div class="grid-3col-input ti-extra-coils" style="display:none; margin-top:8px;">
+                        <div class="coil-item"><label>Cuộn 6</label><input type="number" id="ti_r_c_6" placeholder="R (Ω)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 7</label><input type="number" id="ti_r_c_7" placeholder="R (Ω)" step="any"></div>
+                        <div class="coil-item"><label>Cuộn 8</label><input type="number" id="ti_r_c_8" placeholder="R (Ω)" step="any"></div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-calc" onclick="tinhR1CTI()">QUY ĐỔI VỀ 75°C & LƯU NHẬT KÝ TI</button>
+
+            <div id="ti_result_r1c" class="result-box">
+                <div style="font-weight: 800; color: #0a3b82; margin-bottom: 10px; text-transform: uppercase; font-size: 13px;">KẾT QUẢ R1C QUY ĐỔI VỀ 75°C (Ω):</div>
+                <table class="table-result">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">Cuộn</th>
+                            <th style="background:#e53e3e;">Pha A</th>
+                            <th style="background:#d69e2e;">Pha B</th>
+                            <th style="background:#3182ce;">Pha C</th>
+                        </tr>
+                        <tr>
+                            <th style="font-size:10px;" id="ti_k_a_disp">Hệ số k</th>
+                            <th style="font-size:10px;" id="ti_k_b_disp">Hệ số k</th>
+                            <th style="font-size:10px;" id="ti_k_c_disp">Hệ số k</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ti_result_r1c_body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TI - TAB 3: NHẬT KÝ & XUẤT BÁO CÁO -->
+        <div id="ti_tab3" class="tab-content ti-tab-content">
+            <div style="font-weight: 800; color: #0a3b82; margin-bottom: 10px; font-size: 15px; text-transform: uppercase;">LỊCH SỬ ĐO MÁY BIẾN DÒNG (TI)</div>
+            
+            <div class="btn-sync-group">
+                <button class="btn-excel" onclick="xuatExcelCSV('ti')">XUẤT CSV (EXCEL)</button>
+                <button class="btn-backup" onclick="saulapBackupJSON('ti')">TẢI BACKUP</button>
+            </div>
+
+            <div id="ti_history_list" class="history-card">
+            </div>
+
+            <button class="btn-danger" onclick="xoaNhatKy('ti')">XÓA TOÀN BỘ DỮ LIỆU BỘ NHỚ TI</button>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- PHẦN 2: MÁY BIẾN ÁP (TU)                   -->
+    <!-- ========================================== -->
+    <div id="master-tu" class="master-content">
+        <div class="tab-group">
+            <button type="button" class="tab-btn tu-tab-btn active" onclick="switchSubTab('tu', 'tu_tab1')">1. Tỉ Số Biến (TSB)</button>
+            <button type="button" class="tab-btn tu-tab-btn" onclick="switchSubTab('tu', 'tu_tab2')">2. Quy Đổi R1C</button>
+            <button type="button" class="tab-btn tu-tab-btn" onclick="switchSubTab('tu', 'tu_tab3')">3. Nhật Ký TU</button>
+        </div>
+
+        <!-- TU - TAB 1: TÍNH TỈ SỐ BIẾN -->
+        <div id="tu_tab1" class="tab-content tu-tab-content active">
+            <div class="form-group">
+                <label>🏷️ Tên / Vị trí TU (Ghi chú):</label>
+                <input type="text" id="tu_name_tiso" placeholder="VD: TU 431 - Trạm 110kV Bảo Lộc">
+            </div>
+
+            <div class="form-group">
+                <label>⚡ Sơ cấp định mức Un_sơ:</label>
+                <div class="radio-tile-group">
+                    <div class="radio-tile"><input type="radio" name="tu_un_so" id="so_22" value="22"><label for="so_22">22 kV</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_so" id="so_35" value="35"><label for="so_35">35 kV</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_so" id="so_110" value="110" checked><label for="so_110">110 kV</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_so" id="so_220" value="220"><label for="so_220">220 kV</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_so" id="so_500" value="500"><label for="so_500">500 kV</label></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>🔌 Cuộn Thứ 1 (Un_1):</label>
+                <div class="radio-tile-group">
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu1" id="t1_110_sqrt3" value="110_sqrt3" checked><label for="t1_110_sqrt3">110/√3 V</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu1" id="t1_100_sqrt3" value="100_sqrt3"><label for="t1_100_sqrt3">100/√3 V</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu1" id="t1_110_3" value="110_3"><label for="t1_110_3">110/3 V</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu1" id="t1_100_3" value="100_3"><label for="t1_100_3">100/3 V</label></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>🔌 Cuộn Thứ 2 (Un_2):</label>
+                <div class="radio-tile-group">
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu2" id="t2_110_sqrt3" value="110_sqrt3" checked><label for="t2_110_sqrt3">110/√3 V</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu2" id="t2_100_sqrt3" value="100_sqrt3"><label for="t2_100_sqrt3">100/√3 V</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu2" id="t2_110_3" value="110_3"><label for="t2_110_3">110/3 V</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu2" id="t2_100_3" value="100_3"><label for="t2_100_3">100/3 V</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu2" id="t2_none" value="none"><label for="t2_none">❌ Tắt</label></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>🔌 Cuộn Thứ 3 (Un_3 - Hở/Khác):</label>
+                <div class="radio-tile-group">
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu3" id="t3_100_3" value="100_3" checked><label for="t3_100_3">100/3 V</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu3" id="t3_110_3" value="110_3"><label for="t3_110_3">110/3 V</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu3" id="t3_110_sqrt3" value="110_sqrt3"><label for="t3_110_sqrt3">110/√3 V</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu3" id="t3_100_sqrt3" value="100_sqrt3"><label for="t3_100_sqrt3">100/√3 V</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_un_thu3" id="t3_none" value="none"><label for="t3_none">❌ Tắt</label></div>
+                </div>
+            </div>
+
+            <hr>
+            <div style="font-size: 14px; font-weight: 800; color: #0a3b82; margin-bottom: 12px; text-align: center;">📊 NHẬP SỐ LIỆU ĐO 3 PHA DỌC (U sơ bơm = 10kV):</div>
+
+            <div id="tu_phas_container">
+                <!-- PHA A TU -->
+                <div class="pha-card">
+                    <div class="pha-title"><span>🔴 PHA A</span></div>
+                    <div class="grid-2col" style="margin-bottom: 10px; background: #e2e8f0; padding: 6px 10px; border-radius: 6px;">
+                        <div><span style="font-size:12px; font-weight:700; color:#2d3748;">U_sơ Lần 1 (kV):</span> <input type="number" id="tu_ua_s1" value="10" style="padding:6px; font-size:13px;"></div>
+                        <div><span style="font-size:12px; font-weight:700; color:#2d3748;">U_sơ Lần 2 (kV):</span> <input type="number" id="tu_ua_s2" value="10" style="padding:6px; font-size:13px;"></div>
+                    </div>
+                    <div class="sec-title">Cuộn Nhị Thứ 1 (U_thứ V):</div>
+                    <div class="grid-2col-input" style="margin-bottom:8px;"><input type="number" id="tu_u2a1_1" placeholder="Lần 1" step="any"><input type="number" id="tu_u2a1_2" placeholder="Lần 2" step="any"></div>
+                    <div class="sec-title">Cuộn Nhị Thứ 2 (U_thứ V):</div>
+                    <div class="grid-2col-input" style="margin-bottom:8px;"><input type="number" id="tu_u2a2_1" placeholder="Lần 1" step="any"><input type="number" id="tu_u2a2_2" placeholder="Lần 2" step="any"></div>
+                    <div class="sec-title">Cuộn Nhị Thứ 3 (U_thứ V):</div>
+                    <div class="grid-2col-input"><input type="number" id="tu_u2a3_1" placeholder="Lần 1" step="any"><input type="number" id="tu_u2a3_2" placeholder="Lần 2" step="any"></div>
+                </div>
+
+                <!-- PHA B TU -->
+                <div class="pha-card">
+                    <div class="pha-title"><span>🟡 PHA B</span></div>
+                    <div class="grid-2col" style="margin-bottom: 10px; background: #e2e8f0; padding: 6px 10px; border-radius: 6px;">
+                        <div><span style="font-size:12px; font-weight:700; color:#2d3748;">U_sơ Lần 1 (kV):</span> <input type="number" id="tu_ub_s1" value="10" style="padding:6px; font-size:13px;"></div>
+                        <div><span style="font-size:12px; font-weight:700; color:#2d3748;">U_sơ Lần 2 (kV):</span> <input type="number" id="tu_ub_s2" value="10" style="padding:6px; font-size:13px;"></div>
+                    </div>
+                    <div class="sec-title">Cuộn Nhị Thứ 1 (U_thứ V):</div>
+                    <div class="grid-2col-input" style="margin-bottom:8px;"><input type="number" id="tu_u2b1_1" placeholder="Lần 1" step="any"><input type="number" id="tu_u2b1_2" placeholder="Lần 2" step="any"></div>
+                    <div class="sec-title">Cuộn Nhị Thứ 2 (U_thứ V):</div>
+                    <div class="grid-2col-input" style="margin-bottom:8px;"><input type="number" id="tu_u2b2_1" placeholder="Lần 1" step="any"><input type="number" id="tu_u2b2_2" placeholder="Lần 2" step="any"></div>
+                    <div class="sec-title">Cuộn Nhị Thứ 3 (U_thứ V):</div>
+                    <div class="grid-2col-input"><input type="number" id="tu_u2b3_1" placeholder="Lần 1" step="any"><input type="number" id="tu_u2b3_2" placeholder="Lần 2" step="any"></div>
+                </div>
+
+                <!-- PHA C TU -->
+                <div class="pha-card">
+                    <div class="pha-title"><span>🔵 PHA C</span></div>
+                    <div class="grid-2col" style="margin-bottom: 10px; background: #e2e8f0; padding: 6px 10px; border-radius: 6px;">
+                        <div><span style="font-size:12px; font-weight:700; color:#2d3748;">U_sơ Lần 1 (kV):</span> <input type="number" id="tu_uc_s1" value="10" style="padding:6px; font-size:13px;"></div>
+                        <div><span style="font-size:12px; font-weight:700; color:#2d3748;">U_sơ Lần 2 (kV):</span> <input type="number" id="tu_uc_s2" value="10" style="padding:6px; font-size:13px;"></div>
+                    </div>
+                    <div class="sec-title">Cuộn Nhị Thứ 1 (U_thứ V):</div>
+                    <div class="grid-2col-input" style="margin-bottom:8px;"><input type="number" id="tu_u2c1_1" placeholder="Lần 1" step="any"><input type="number" id="tu_u2c1_2" placeholder="Lần 2" step="any"></div>
+                    <div class="sec-title">Cuộn Nhị Thứ 2 (U_thứ V):</div>
+                    <div class="grid-2col-input" style="margin-bottom:8px;"><input type="number" id="tu_u2c2_1" placeholder="Lần 1" step="any"><input type="number" id="tu_u2c2_2" placeholder="Lần 2" step="any"></div>
+                    <div class="sec-title">Cuộn Nhị Thứ 3 (U_thứ V):</div>
+                    <div class="grid-2col-input"><input type="number" id="tu_u2c3_1" placeholder="Lần 1" step="any"><input type="number" id="tu_u2c3_2" placeholder="Lần 2" step="any"></div>
+                </div>
+            </div>
+
+            <button class="btn-calc" onclick="tinhTisoTU()">TÍNH TỈ SỐ & LƯU NHẬT KÝ TU</button>
+
+            <div id="tu_result_tiso" class="result-box">
+                <div id="tu_alert_box" class="alert-banner">
+                    ⚠️ CẢNH BÁO: PHÁT HIỆN LỖI SAI SỐ > 0.5% KHI ĐO TỈ SỐ BIẾN TU! CẦN KIỂM TRA LẠI CUỘN DÂY NẠP/ĐO HOẶC ĐOẠN ĐẦU NỐI.
+                </div>
+                <div style="font-weight: 800; color: #0a3b82; margin-bottom: 10px; text-transform: uppercase; font-size: 14px;">KẾT QUẢ TỈ SỐ BIẾN ĐO ĐƯỢC:</div>
+                <table class="table-result">
+                    <thead><tr><th>Pha</th><th>Cuộn</th><th>Kn (Chuẩn)</th><th>K_đo</th><th>Sai số (%)</th></tr></thead>
+                    <tbody id="tu_result_table_body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TU - TAB 2: QUY ĐỔI ĐIỆN TRỞ 1 CHIỀU -->
+        <div id="tu_tab2" class="tab-content tu-tab-content">
+            <div class="form-group">
+                <label>🏷️ Tên / Vị trí TU (Ghi chú):</label>
+                <input type="text" id="tu_name_r1c" placeholder="VD: TU 431 - Trạm 110kV Bảo Lộc">
+            </div>
+
+            <div class="form-group" style="background: #e2e8f0; padding: 12px; border-radius: 8px;">
+                <label>📐 Vật liệu cuộn dây (Hằng số T):</label>
+                <div class="radio-tile-group">
+                    <div class="radio-tile"><input type="radio" name="tu_material" id="tu_mat_cu" value="234.5" checked onchange="toggleCustomT_TU()"><label for="tu_mat_cu">Đồng (Cu - 234.5)</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_material" id="tu_mat_al" value="225" onchange="toggleCustomT_TU()"><label for="tu_mat_al">Nhôm (Al - 225)</label></div>
+                    <div class="radio-tile"><input type="radio" name="tu_material" id="tu_mat_custom" value="custom" onchange="toggleCustomT_TU()"><label for="tu_mat_custom">Khác...</label></div>
+                </div>
+                <input type="number" id="tu_custom_t_val" placeholder="Nhập hằng số T..." style="display: none; margin-top: 8px;" step="any">
+            </div>
+
+            <hr>
+            <div style="font-size: 14px; font-weight: 800; color: #0a3b82; margin-bottom: 12px; text-align: center;">📊 NHẬP NHIỆT ĐỘ (°C) & ĐIỆN TRỞ R1C (mΩ):</div>
+
+            <div class="pha-card">
+                <div class="pha-title"><span>🔴 PHA A</span><span style="font-size:12px; font-weight:normal; color:#4a5568; display:flex; align-items:center; gap:4px;">🌡️ T (°C): <input type="number" id="tu_temp_a" value="30" step="any" style="width:60px; padding:4px; font-size:13px; font-weight:bold; border:1px solid #cbd5e0; border-radius:4px;"></span></div>
+                <div class="grid-3col-input">
+                    <div class="coil-item"><label>Cuộn 1</label><input type="number" id="tu_ra_1" placeholder="R (mΩ)" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 2</label><input type="number" id="tu_ra_2" placeholder="R (mΩ)" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 3</label><input type="number" id="tu_ra_3" placeholder="R (mΩ)" step="any"></div>
+                </div>
+            </div>
+
+            <div class="pha-card">
+                <div class="pha-title"><span>🟡 PHA B</span><span style="font-size:12px; font-weight:normal; color:#4a5568; display:flex; align-items:center; gap:4px;">🌡️ T (°C): <input type="number" id="tu_temp_b" value="30" step="any" style="width:60px; padding:4px; font-size:13px; font-weight:bold; border:1px solid #cbd5e0; border-radius:4px;"></span></div>
+                <div class="grid-3col-input">
+                    <div class="coil-item"><label>Cuộn 1</label><input type="number" id="tu_rb_1" placeholder="R (mΩ)" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 2</label><input type="number" id="tu_rb_2" placeholder="R (mΩ)" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 3</label><input type="number" id="tu_rb_3" placeholder="R (mΩ)" step="any"></div>
+                </div>
+            </div>
+
+            <div class="pha-card">
+                <div class="pha-title"><span>🔵 PHA C</span><span style="font-size:12px; font-weight:normal; color:#4a5568; display:flex; align-items:center; gap:4px;">🌡️ T (°C): <input type="number" id="tu_temp_c" value="30" step="any" style="width:60px; padding:4px; font-size:13px; font-weight:bold; border:1px solid #cbd5e0; border-radius:4px;"></span></div>
+                <div class="grid-3col-input">
+                    <div class="coil-item"><label>Cuộn 1</label><input type="number" id="tu_rc_1" placeholder="R (mΩ)" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 2</label><input type="number" id="tu_rc_2" placeholder="R (mΩ)" step="any"></div>
+                    <div class="coil-item"><label>Cuộn 3</label><input type="number" id="tu_rc_3" placeholder="R (mΩ)" step="any"></div>
+                </div>
+            </div>
+
+            <button class="btn-calc" onclick="tinhR1CTU()">QUY ĐỔI 3 PHA VỀ 75°C</button>
+
+            <div id="tu_result_r1c" class="result-box">
+                <div style="font-size: 14px; font-weight: 800; color: #0a3b82; margin-bottom: 10px; text-transform: uppercase;">KẾT QUẢ R1C QUY ĐỔI 75°C:</div>
+                <table class="table-result">
+                    <thead><tr><th>Pha</th><th>Nhiệt độ (°C)</th><th>Hệ số k</th><th>R1 @ 75°C (mΩ)</th><th>R2 @ 75°C (mΩ)</th><th>R3 @ 75°C (mΩ)</th></tr></thead>
+                    <tbody id="tu_result_r1c_table_body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TU - TAB 3: NHẬT KÝ & XUẤT BÁO CÁO -->
+        <div id="tu_tab3" class="tab-content tu-tab-content">
+            <div style="font-weight: 800; color: #0a3b82; margin-bottom: 10px; font-size: 15px; text-transform: uppercase;">📋 LỊCH SỬ ĐO MÁY BIẾN ÁP (TU)</div>
+            <div class="btn-sync-group">
+                <button class="btn-excel" onclick="xuatExcelCSV('tu')">XUẤT CSV (EXCEL)</button>
+                <button class="btn-backup" onclick="saulapBackupJSON('tu')">TẢI BACKUP</button>
+            </div>
+            <div id="tu_history_list" class="history-card"></div>
+            <button class="btn-danger" onclick="xoaNhatKy('tu')">XÓA TOÀN BỘ DỮ LIỆU BỘ NHỚ TU</button>
+        </div>
+    </div>
+</div>
+
+<div class="watermark-footer">
+    EVNNPT - PTC3
+</div>
+
+<script>
+// ---------- ĐIỀU CHUYỂN TABS CHÍNH (MASTER TABS) VÀ TABS PHỤ ----------
+function switchMasterTab(type) {
+    document.getElementById('btn-master-ti').classList.remove('active');
+    document.getElementById('btn-master-tu').classList.remove('active');
+    
+    document.getElementById('master-ti').classList.remove('active');
+    document.getElementById('master-tu').classList.remove('active');
+
+    if(type === 'ti') {
+        document.getElementById('btn-master-ti').classList.add('active');
+        document.getElementById('master-ti').classList.add('active');
+    } else {
+        document.getElementById('btn-master-tu').classList.add('active');
+        document.getElementById('master-tu').classList.add('active');
+    }
+}
+
+function switchSubTab(masterType, tabId) {
+    var btns = document.querySelectorAll('.' + masterType + '-tab-btn');
+    var contents = document.querySelectorAll('.' + masterType + '-tab-content');
+    
+    for (var i = 0; i < btns.length; i++) { btns[i].classList.remove('active'); }
+    for (var i = 0; i < contents.length; i++) { contents[i].classList.remove('active'); }
+    
+    if(tabId.endsWith('tab1')) {
+        btns[0].classList.add('active'); document.getElementById(tabId).classList.add('active');
+    } else if(tabId.endsWith('tab2')) {
+        btns[1].classList.add('active'); document.getElementById(tabId).classList.add('active');
+    } else if(tabId.endsWith('tab3')) {
+        btns[2].classList.add('active'); document.getElementById(tabId).classList.add('active');
+        hienThiNhatKy(masterType);
+    }
+}
+
+function layThoiGian() {
+    var now = new Date();
+    var pad = function(n) { return n < 10 ? '0' + n : n; };
+    var dateStr = pad(now.getDate()) + '/' + pad(now.getMonth() + 1) + '/' + now.getFullYear();
+    var timeStr = pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+    return dateStr + " " + timeStr;
+}
+
+function getRadioValue(name) {
+    var radios = document.getElementsByName(name);
+    for (var i = 0; i < radios.length; i++) { if (radios[i].checked) return radios[i].value; }
+    return null;
+}
+
+// ---------- PHẦN MÁY BIẾN DÒNG (TI) ----------
+function toggleExtraCoilsTI(sourceId) {
+    var isChecked = document.getElementById(sourceId).checked;
+    
+    var cbTsb = document.getElementById('ti_show_extra_tsb');
+    var cbR1c = document.getElementById('ti_show_extra_r1c');
+    if(cbTsb) cbTsb.checked = isChecked;
+    if(cbR1c) cbR1c.checked = isChecked;
+    
+    var extras = document.querySelectorAll('.ti-extra-coils');
+    for (var i = 0; i < extras.length; i++) {
+        extras[i].style.display = isChecked ? 'grid' : 'none';
+    }
+    
+    if(!isChecked){
+        var phases = ['a','b','c'];
+        for(var p=0; p<3; p++){
+            for(var c=6; c<=8; c++){
+                var el_is = document.getElementById('ti_is_' + phases[p] + '_' + c);
+                if(el_is) el_is.value = '';
+                var el_r = document.getElementById('ti_r_' + phases[p] + '_' + c);
+                if(el_r) el_r.value = '';
+                var el_ipn = document.getElementById('ti_ip_n_' + c);
+                if(el_ipn) el_ipn.value = '2000';
+                var el_isn = document.getElementById('ti_is_n_' + c);
+                if(el_isn) el_isn.value = '1';
+            }
+        }
+    }
+}
+
+function toggleCustomT_TI() {
+    var matVal = getRadioValue('material_ti');
+    document.getElementById('custom_t_val_ti').style.display = (matVal === 'custom') ? 'block' : 'none';
+}
+
+function tinhTisoTI() {
+    var tag = document.getElementById('ti_name_tiso').value.trim() || "TI Khong Ten";
+    var showExtra = document.getElementById('ti_show_extra_tsb').checked;
+    var maxCoils = showExtra ? 8 : 5;
+    var phases = ['a', 'b', 'c'];
+    var phaseNames = ['Pha A', 'Pha B', 'Pha C'];
+
+    var tbodyHtml = ""; var detailLog = "";
+    var hasData = false; var hasAlert = false;
+
+    for (var i = 1; i <= maxCoils; i++) {
+        var ip_n = parseFloat(document.getElementById('ti_ip_n_' + i).value);
+        var is_n = parseFloat(document.getElementById('ti_is_n_' + i).value);
+        if(isNaN(ip_n) || isNaN(is_n)) continue;
+
+        var rowHasData = false; var rowCells = "";
+        var logLine = "Cuon " + i + " (" + ip_n + "/" + is_n + "): ";
+        
+        for (var p = 0; p < 3; p++) {
+            var is_test_el = document.getElementById('ti_is_' + phases[p] + '_' + i);
+            var is_test = is_test_el ? parseFloat(is_test_el.value) : NaN;
+            
+            if (!isNaN(is_test) && is_test > 0) {
+                rowHasData = true; hasData = true;
+                
+                var saiso = ((is_test - is_n) / is_n) * 100;
+                var Ktt = ip_n / is_test;
+                var Ratio_P_Actual = Ktt * is_n;
+                var ratioStr = Ratio_P_Actual.toFixed(2) + "/" + is_n;
+                
+                var saisoAbs = Math.abs(saiso);
+                var saisoDisplay = (saiso > 0 ? "+" : "") + saiso.toFixed(3) + "%";
+                var isHighError = saisoAbs > 0.5;
+                if (isHighError) hasAlert = true;
+                
+                var badgeStyle = isHighError ? "class='error-badge'" : "class='pass-badge'";
+                rowCells += "<td><b>" + ratioStr + "</b></td><td><span " + badgeStyle + ">" + saisoDisplay + "</span></td>";
+                logLine += phaseNames[p] + "[" + ratioStr + ", " + saisoDisplay + "] ";
+            } else {
+                rowCells += "<td style='color:#a0aec0;'>-</td><td style='color:#a0aec0;'>-</td>";
+            }
+        }
+        if (rowHasData) { tbodyHtml += "<tr><td><b>" + i + "</b></td>" + rowCells + "</tr>"; detailLog += logLine + "<br>"; }
+    }
+
+    if (!hasData) { alert("Vui long nhap dong thu cap (Is) do duoc cho it nhat 1 cuon!"); return; }
+
+    document.getElementById('ti_alert_box').style.display = hasAlert ? 'block' : 'none';
+    document.getElementById('ti_result_table_body').innerHTML = tbodyHtml;
+    document.getElementById('ti_result_tiso').style.display = 'block';
+
+    luuVaoLocalStorage('ti', { time: layThoiGian(), type: "Ti So Bien TI", tag: tag, detail: detailLog });
+}
+
+function tinhR1CTI() {
+    var tag = document.getElementById('ti_name_r1c').value.trim() || "TI Khong Ten";
+    var matVal = getRadioValue('material_ti');
+    var T_const = (matVal === 'custom') ? parseFloat(document.getElementById('custom_t_val_ti').value) : parseFloat(matVal);
+    if (isNaN(T_const)) { alert("Vui long nhap hang so T!"); return; }
+
+    var phases = ['a', 'b', 'c']; var phaseNames = ['Pha A', 'Pha B', 'Pha C'];
+    var temps = [
+        parseFloat(document.getElementById('ti_temp_a_r1c').value),
+        parseFloat(document.getElementById('ti_temp_b_r1c').value),
+        parseFloat(document.getElementById('ti_temp_c_r1c').value)
+    ];
+
+    var k_factors = [];
+    for(var p = 0; p < 3; p++){
+        if(!isNaN(temps[p])){
+            k_factors[p] = (75 + T_const) / (temps[p] + T_const);
+            document.getElementById('ti_k_' + phases[p] + '_disp').innerText = "k = " + k_factors[p].toFixed(4);
+        } else {
+            k_factors[p] = NaN; document.getElementById('ti_k_' + phases[p] + '_disp').innerText = "k = ---";
+        }
+    }
+
+    var showExtra = document.getElementById('ti_show_extra_r1c').checked;
+    var maxCoils = showExtra ? 8 : 5;
+    var tbodyHtml = ""; var detailLog = ""; var hasData = false;
+
+    for (var i = 1; i <= maxCoils; i++) {
+        var rowHasData = false; var rowCells = ""; var logLine = "Cuon " + i + ": ";
+        for (var p = 0; p < 3; p++) {
+            var r_test_el = document.getElementById('ti_r_' + phases[p] + '_' + i);
+            var r_test = r_test_el ? parseFloat(r_test_el.value) : NaN;
+            if (!isNaN(r_test) && !isNaN(k_factors[p])) {
+                rowHasData = true; hasData = true;
+                var r_75 = r_test * k_factors[p];
+                rowCells += "<td><b>" + r_75.toFixed(4) + "</b></td>";
+                logLine += phaseNames[p] + "(" + r_75.toFixed(4) + " ohm) ";
+            } else {
+                rowCells += "<td style='color:#a0aec0;'>-</td>";
+            }
+        }
+        if (rowHasData) { tbodyHtml += "<tr><td><b>" + i + "</b></td>" + rowCells + "</tr>"; detailLog += logLine + "<br>"; }
+    }
+
+    if (!hasData) { alert("Vui long nhap R1C va Nhiet do cho it nhat 1 pha/cuon!"); return; }
+
+    document.getElementById('ti_result_r1c_body').innerHTML = tbodyHtml;
+    document.getElementById('ti_result_r1c').style.display = 'block';
+
+    luuVaoLocalStorage('ti', { time: layThoiGian(), type: "Quy doi R1C TI", tag: tag, detail: detailLog });
+}
+
+// ---------- PHẦN MÁY BIẾN ÁP (TU) ----------
+function toggleCustomT_TU() {
+    var matVal = getRadioValue('tu_material');
+    document.getElementById('tu_custom_t_val').style.display = (matVal === 'custom') ? 'block' : 'none';
+}
+
+function getKnTU(val_so, val_thu_type) {
+    if (!val_thu_type || val_thu_type === 'none') return null;
+    var un_so_v = (val_so * 1000) / Math.sqrt(3);
+    var un_thu_v = 0;
+    if (val_thu_type === "110_sqrt3") un_thu_v = 110 / Math.sqrt(3);
+    else if (val_thu_type === "100_sqrt3") un_thu_v = 100 / Math.sqrt(3);
+    else if (val_thu_type === "110_3") un_thu_v = 110 / 3;
+    else if (val_thu_type === "100_3") un_thu_v = 100 / 3;
+    return un_so_v / un_thu_v;
+}
+
+function tinhTisoTU() {
+    var tag = document.getElementById('tu_name_tiso').value.trim() || "TU Khong Ten";
+    var val_so = parseFloat(getRadioValue('tu_un_so'));
+    var kn1 = getKnTU(val_so, getRadioValue('tu_un_thu1'));
+    var kn2 = getKnTU(val_so, getRadioValue('tu_un_thu2'));
+    var kn3 = getKnTU(val_so, getRadioValue('tu_un_thu3'));
+
+    var phas = [
+        { name: "Pha A", s1: 'tu_ua_s1', s2: 'tu_ua_s2', c1_1: 'tu_u2a1_1', c1_2: 'tu_u2a1_2', c2_1: 'tu_u2a2_1', c2_2: 'tu_u2a2_2', c3_1: 'tu_u2a3_1', c3_2: 'tu_u2a3_2' },
+        { name: "Pha B", s1: 'tu_ub_s1', s2: 'tu_ub_s2', c1_1: 'tu_u2b1_1', c1_2: 'tu_u2b1_2', c2_1: 'tu_u2b2_1', c2_2: 'tu_u2b2_2', c3_1: 'tu_u2b3_1', c3_2: 'tu_u2b3_2' },
+        { name: "Pha C", s1: 'tu_uc_s1', s2: 'tu_uc_s2', c1_1: 'tu_u2c1_1', c1_2: 'tu_u2c1_2', c2_1: 'tu_u2c2_1', c2_2: 'tu_u2c2_2', c3_1: 'tu_u2c3_1', c3_2: 'tu_u2c3_2' }
+    ];
+
+    var tbodyHtml = ""; var detailLog = ""; var hasData = false; var hasAlert = false;
+
+    for (var i = 0; i < phas.length; i++) {
+        var p = phas[i];
+        var us1 = parseFloat(document.getElementById(p.s1).value) || 10;
+        var us2 = parseFloat(document.getElementById(p.s2).value) || 10;
+
+        var cuons = [
+            { name: "Cuon 1", Kn: kn1, v1: parseFloat(document.getElementById(p.c1_1).value), v2: parseFloat(document.getElementById(p.c1_2).value) },
+            { name: "Cuon 2", Kn: kn2, v1: parseFloat(document.getElementById(p.c2_1).value), v2: parseFloat(document.getElementById(p.c2_2).value) },
+            { name: "Cuon 3", Kn: kn3, v1: parseFloat(document.getElementById(p.c3_1).value), v2: parseFloat(document.getElementById(p.c3_2).value) }
+        ];
+
+        for (var j = 0; j < cuons.length; j++) {
+            var c = cuons[j];
+            if (c.Kn !== null && (!isNaN(c.v1) || !isNaN(c.v2))) {
+                hasData = true; var count = 0; var sum_u1 = 0, sum_u2 = 0;
+                if (!isNaN(c.v1)) { sum_u1 += us1; sum_u2 += c.v1; count++; }
+                if (!isNaN(c.v2)) { sum_u1 += us2; sum_u2 += c.v2; count++; }
+
+                var u1_avg_kv = sum_u1 / count;
+                var u2_avg_v = sum_u2 / count;
+                var Ktt = (u1_avg_kv * 1000) / u2_avg_v;
+                var saiso = ((Ktt - c.Kn) / c.Kn) * 100;
+                var isHighError = Math.abs(saiso) > 0.5;
+                if (isHighError) hasAlert = true;
+
+                var saisoStr = (saiso > 0 ? "+" : "") + saiso.toFixed(4) + "%";
+                var badgeStyle = isHighError ? "class='error-badge'" : "class='pass-badge'";
+
+                tbodyHtml += "<tr><td><b>" + p.name + "</b></td><td>" + c.name + "</td><td>" + c.Kn.toFixed(3) + "</td><td><b>" + Ktt.toFixed(3) + "</b></td><td><span " + badgeStyle + ">" + saisoStr + "</span></td></tr>";
+                detailLog += p.name + " - " + c.name + ": K=" + Ktt.toFixed(3) + " | Sai so=" + saisoStr + "<br>";
+            }
+        }
+    }
+
+    if (!hasData) { alert("Vui long nhap so lieu cho it nhat 1 cuon!"); return; }
+
+    document.getElementById('tu_alert_box').style.display = hasAlert ? 'block' : 'none';
+    document.getElementById('tu_result_table_body').innerHTML = tbodyHtml;
+    document.getElementById('tu_result_tiso').style.display = 'block';
+
+    luuVaoLocalStorage('tu', { time: layThoiGian(), type: "Ti so bien TU", tag: tag, detail: detailLog });
+}
+
+function tinhR1CTU() {
+    var tag = document.getElementById('tu_name_r1c').value.trim() || "TU Khong Ten";
+    var matVal = getRadioValue('tu_material');
+    var T_const = (matVal === 'custom') ? parseFloat(document.getElementById('tu_custom_t_val').value) : parseFloat(matVal);
+    if (isNaN(T_const)) { alert("Vui long nhap hang so T!"); return; }
+
+    var phasR = [
+        { name: "Pha A", tempId: 'tu_temp_a', r1: 'tu_ra_1', r2: 'tu_ra_2', r3: 'tu_ra_3' },
+        { name: "Pha B", tempId: 'tu_temp_b', r1: 'tu_rb_1', r2: 'tu_rb_2', r3: 'tu_rb_3' },
+        { name: "Pha C", tempId: 'tu_temp_c', r1: 'tu_rc_1', r2: 'tu_rc_2', r3: 'tu_rc_3' }
+    ];
+
+    var tbodyHtml = ""; var detailLog = ""; var hasData = false;
+
+    for (var i = 0; i < phasR.length; i++) {
+        var p = phasR[i];
+        var t_pha = parseFloat(document.getElementById(p.tempId).value);
+        var v1 = parseFloat(document.getElementById(p.r1).value);
+        var v2 = parseFloat(document.getElementById(p.r2).value);
+        var v3 = parseFloat(document.getElementById(p.r3).value);
+
+        if (!isNaN(v1) || !isNaN(v2) || !isNaN(v3)) {
+            if (isNaN(t_pha)) { alert("Vui long nhap nhiet do!"); return; }
+            hasData = true;
+            var k_pha = (75 + T_const) / (t_pha + T_const);
+            var r1_75 = !isNaN(v1) ? (v1 * k_pha).toFixed(4) : "-";
+            var r2_75 = !isNaN(v2) ? (v2 * k_pha).toFixed(4) : "-";
+            var r3_75 = !isNaN(v3) ? (v3 * k_pha).toFixed(4) : "-";
+
+            tbodyHtml += "<tr><td><b>" + p.name + "</b></td><td>" + t_pha + "</td><td>" + k_pha.toFixed(4) + "</td><td><b>" + r1_75 + "</b></td><td><b>" + r2_75 + "</b></td><td><b>" + r3_75 + "</b></td></tr>";
+            detailLog += p.name + " (" + t_pha + "C, k=" + k_pha.toFixed(4) + "): R1=" + r1_75 + " | R2=" + r2_75 + " | R3=" + r3_75 + "<br>";
+        }
+    }
+
+    if (!hasData) { alert("Vui long nhap dien tro R1C!"); return; }
+
+    document.getElementById('tu_result_r1c_table_body').innerHTML = tbodyHtml;
+    document.getElementById('tu_result_r1c').style.display = 'block';
+
+    luuVaoLocalStorage('tu', { time: layThoiGian(), type: "Quy doi R1C TU", tag: tag, detail: detailLog });
+}
+
+// ---------- CHUNG CHO CẢ 2 BÊN ----------
+function luuVaoLocalStorage(type, record) {
+    var key = type === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
+    var history = JSON.parse(localStorage.getItem(key) || '[]');
+    history.unshift(record);
+    localStorage.setItem(key, JSON.stringify(history));
+}
+
+function hienThiNhatKy(type) {
+    var key = type === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
+    var history = JSON.parse(localStorage.getItem(key) || '[]');
+    var listDiv = document.getElementById(type + '_history_list');
+    
+    if (history.length === 0) {
+        listDiv.innerHTML = "<div style='color:#a0aec0; text-align:center; padding: 20px 0;'>Chua co nhat ky luu nao.</div>";
+        return;
+    }
+
+    var html = "";
+    for (var i = 0; i < history.length; i++) {
+        var item = history[i];
+        html += '<div class="history-item"><div class="history-time">' + item.time + ' - [' + item.tag + '] - ' + item.type + '</div><div class="history-detail">' + item.detail + '</div></div>';
+    }
+    listDiv.innerHTML = html;
+}
+
+function xuatExcelCSV(type) {
+    var key = type === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
+    var history = JSON.parse(localStorage.getItem(key) || '[]');
+    if (history.length === 0) { alert("Chua co du lieu!"); return; }
+
+    var NL = String.fromCharCode(13, 10);
+    var csvContent = "\uFEFFThoi Gian,Ten Thiet Bi,Loai Phep Do,Chi Tiet Ket Qua" + NL;
+    for (var i = 0; i < history.length; i++) {
+        var item = history[i];
+        var cleanDetail = item.detail.replace(/<br>/g, " | ");
+        csvContent += '"' + item.time + '","' + item.tag + '","' + item.type + '","' + cleanDetail + '"' + NL;
+    }
+
+    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a'); a.href = url;
+    a.download = "NhatKy_" + type.toUpperCase() + "_PTC3_" + new Date().toISOString().slice(0,10) + ".csv";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+function saulapBackupJSON(type) {
+    var key = type === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
+    var history = JSON.parse(localStorage.getItem(key) || '[]');
+    if (history.length === 0) { alert("Chua co du lieu!"); return; }
+
+    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(history, null, 2));
+    var a = document.createElement('a'); a.href = dataStr;
+    a.download = "Backup_" + type.toUpperCase() + "_PTC3_" + new Date().toISOString().slice(0,10) + ".json";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+function xoaNhatKy(type) {
+    var key = type === 'ti' ? 'evn_ti_history' : 'evn_tu_history';
+    if (confirm("XOA TOAN BO lich su luu tren may nay?")) {
+        localStorage.removeItem(key);
+        hienThiNhatKy(type);
+    }
+}
+</script>
+
+</body>
+</html>
